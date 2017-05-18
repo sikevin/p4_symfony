@@ -1,4 +1,2 @@
-projet4
-=======
-
-A Symfony project created on May 18, 2017, 8:52 am.
+# p4_symfony
+Création d'un nouveau système de réservation et de gestion des tickets en ligne
