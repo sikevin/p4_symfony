@@ -60,11 +60,11 @@ La création d’un back-office pour lister les clients et commander n’est pas
 Un email de confirmation sera envoyé à l’utilisateur et fera foi de billet.
 
 Le mail doit indiquer:
-	* Le nom et le logo du musée
-	* La date de réservation
-	* Le tarif
-	* Le nom de chaque visiteur
-	* Le code de la réservation (un ensemble de lettres et de chiffres)
+* Le nom et le logo du musée
+* La date de réservation
+* Le tarif
+* Le nom de chaque visiteur
+* Le code de la réservation (un ensemble de lettres et de chiffres)
 
 ### Livrables attendus
 
