@@ -3,11 +3,24 @@
     <head>
         <meta charset="UTF-8" />
         <title>{% block title %}Welcome!{% endblock %}</title>
-        {% block stylesheets %}{% endblock %}
-        <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}" />
+        {% block stylesheets %}
+            <link href="{{ asset('favicon.ico') }}" rel="icon" type="image/ico">
+            <link rel="stylesheet" href="{{ asset('styles/style.css') }}">
+            <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+        {% endblock %}
     </head>
     <body>
-        {% block body %}{% endblock %}
-        {% block javascripts %}{% endblock %}
+        <div class="container">
+            <div class="row">
+                <div class="imgTitle">
+                    <img src="{{ asset('musee_louvre.png') }}" alt="Musée du louvre">
+                </div>
+                {% block body %}
+
+                {% endblock %}
+            </div>
+        </div>
+        {% block javascripts %}
+        {% endblock %}
     </body>
 </html>

@@ -10,15 +10,16 @@ namespace AppBundle\Controller;
 
 
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Response;
 
-class ReservationController
+class ReservationController extends Controller
 {
 	/**
-	 * @Route("/reservation")
+	 * @Route("/")
 	 */
 	public function showAction()
 	{
-		return new Response('Hello World');
+		return $this->render('reservation/form1.html.twig');
 	}
 }
