@@ -269,42 +269,4 @@ class Reservation
 	{
 		return $this->reservationCode;
 	}
-
-    /**
-     * Set reservationCode
-     *
-     * @param string $reservationCode
-     *
-     * @return Reservation
-     */
-    public function setReservationCode($reservationCode)
-    {
-        $this->reservationCode = $reservationCode;
-
-        return $this;
-    }
-
-    /**
-     * Set email
-     *
-     * @param string $email
-     *
-     * @return Reservation
-     */
-    public function setEmail($email)
-    {
-        $this->email = $email;
-
-        return $this;
-    }
-
-    /**
-     * Get email
-     *
-     * @return string
-     */
-    public function getEmail()
-    {
-        return $this->email;
-    }
 }
