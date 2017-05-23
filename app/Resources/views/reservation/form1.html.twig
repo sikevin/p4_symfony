@@ -23,32 +23,32 @@
                 <th>Tarif réduit ?</th>
                 <th>Code de réservation</th>
             </tr>
+            {% for visitor in listVisitors %}
             <tr>
-                <td>{{ reservation.lastname }}</td>
-                <td>{{ reservation.firstname }}</td>
-                <td>{{ reservation.birthdate|date('d-m-Y') }}</td>
-                <td>{{ reservation.country }}</td>
-                <td>{{ reservation.reservationdate|date('d-m-Y') }}</td>
-                <td>
-                    {% if(reservation.ticketType == 0) %}
-                        Demi-journée
-                    {% else %}
-                        Journée
-                    {% endif %}
-                </td>
-                <td>
-                    {% if(reservation.tariff == 0) %}
-                        Non
+                    <td>{{ visitor.lastname }}</td>
+                    <td>{{ visitor.firstname }}</td>
+                    <td>{{ visitor.birthdate|date('d-m-Y') }}</td>
+                    <td>{{ visitor.country }}</td>
+                    <td>{{ reservation.reservationdate|date('d-m-Y') }}</td>
+                    <td>
+                        {% if(reservation.ticketType == 0) %}
+                            Demi-journée
                         {% else %}
-                        Oui
-                    {% endif %}
-                </td>
-                <td>Code de réservation</td>
+                            Journée
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if(visitor.tariff == 0) %}
+                            Non
+                        {% else %}
+                            Oui
+                        {% endif %}
+                    </td>
+                    <td>
+                        {{ reservation.reservationCode }}
+                    </td>
             </tr>
+            {% endfor %}
         </table>
 
-
-    <div>
-        {{ form(form) }}
-    </div>
 {% endblock %}

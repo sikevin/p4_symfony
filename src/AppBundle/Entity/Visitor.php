@@ -22,7 +22,7 @@ class Visitor
     private $id;
 
     /**
-     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Reservation")
+     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Reservation", cascade={"persist"})
 	 * @ORM\JoinColumn(nullable=false)
      */
     private $reservation;

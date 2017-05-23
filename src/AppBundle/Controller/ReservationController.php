@@ -13,6 +13,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Response;
 use AppBundle\Entity\Reservation;
+use AppBundle\Entity\Visitor;
 
 use AppBundle\Form\ReservationType;
 
@@ -24,24 +25,28 @@ class ReservationController extends Controller
 	 */
 	public function showAction()
 	{
-		$reservationId = 1;
-		$reservation1 = $this->getDoctrine()
-			->getRepository('AppBundle:Reservation')
-			->find($reservationId);
+		$em = $this->getDoctrine()->getManager();
 
-		if (!$reservation1)
+		$reservationId = 2;
+		$reservation = $em
+			->getRepository('AppBundle:Reservation')
+			->find($reservationId)
+		;
+
+		if (!$reservation)
 		{
 			throw $this->createNotFoundException(
 				'No product found for id '. $reservationId);
 		}
 
-
-		$reservation = new Reservation();
-		$form = $this->createForm(ReservationType::class, $reservation);
+		$listVisitors = $em
+			->getRepository('AppBundle:Visitor')
+			->findBy(array('reservation' => $reservation))
+		;
 
 		return $this->render('reservation/form1.html.twig',[
-			'reservation' => $reservation1,
-			'form' 		  => $form
+			'reservation' => $reservation,
+			'listVisitors' => $listVisitors
 		]);
 	}
 
@@ -52,17 +57,40 @@ class ReservationController extends Controller
 	{
 		// TEST réussi: add a reservation to DB
 		$reservation = new Reservation();
-		$reservation->setLastname("SI");
-		$reservation->setFirstname("Kevin");
-		$reservation->setBirthdate(new \DateTime("1995-06-20"));
-		$reservation->setCountry("France");
 		$reservation->setReservationDate(new \DateTime('NOW'));
-		$reservation->setTariff(false);
 		$reservation->setTicketType(true);
+		$reservation->setReservationCode("3kEp495Cl");
+
+		$visitor1 = new Visitor();
+		$visitor1->setLastname("SI");
+		$visitor1->setFirstname("Kevin");
+		$visitor1->setCountry("France");
+		$visitor1->setBirthdate(new \DateTime('1995-06-20'));
+		$visitor1->setTariff(false);
+
+		$visitor2 = new Visitor();
+		$visitor2->setLastname("SI");
+		$visitor2->setFirstname("Denis");
+		$visitor2->setCountry("France");
+		$visitor2->setBirthdate(new \DateTime('1997-04-18'));
+		$visitor2->setTariff(false);
+
+		$visitor3 = new Visitor();
+		$visitor3->setLastname("SI");
+		$visitor3->setFirstname("Thierry");
+		$visitor3->setCountry("France");
+		$visitor3->setBirthdate(new \DateTime('2002-01-11'));
+		$visitor3->setTariff(false);
+
+		$visitor1->setReservation($reservation);
+		$visitor2->setReservation($reservation);
+		$visitor3->setReservation($reservation);
 
 		$em = $this->getDoctrine()->getManager();
 
-		$em->persist($reservation);
+		$em->persist($visitor1);
+		$em->persist($visitor2);
+		$em->persist($visitor3);
 
 		$em->flush();
 
