@@ -45,10 +45,42 @@
                         {% endif %}
                     </td>
                     <td>
-                        {{ reservation.reservationCode }}
+                        <strong>{{ reservation.reservationCode }}</strong>
                     </td>
             </tr>
             {% endfor %}
         </table>
+
+    {# Formulaire #}
+    <h2>Formulaire de réservation</h2>
+    <div class="well">
+        <div class="form-group">
+            {{ form_label(reservationForm.email, 'Adresse email') }}
+            {{ form_errors(reservationForm.email) }}
+            {{ form_widget(reservationForm.email) }}
+        </div>
+
+        <div class="form-group">
+            {{ form_label(reservationForm.reservationDate, 'Date de réservation') }}
+            {{ form_errors(reservationForm.reservationDate) }}
+            {{ form_widget(reservationForm.reservationDate) }}
+        </div>
+
+        <div class="form-group">
+            {{ form_label(reservationForm.ticketType, 'Type de billet ') }}
+            {{ form_errors(reservationForm.ticketType) }}
+            {{ form_widget(reservationForm.ticketType) }}
+        </div>
+        <div class="form-group">
+            {{ form_label(reservationForm.visitors, 'Nombre de visiteur') }}
+            {{ form_errors(reservationForm.visitors) }}
+            {{ form_widget(reservationForm.visitors) }}
+        </div>
+
+        <div class="form-group">
+            <button class="btn btn-default">Précédent</button>
+            {{ form_widget(reservationForm.next, {'label': 'Suivant'}) }}
+        </div>
+    </div>
 
 {% endblock %}

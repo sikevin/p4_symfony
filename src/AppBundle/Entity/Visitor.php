@@ -62,6 +62,10 @@ class Visitor
      */
     private $tariff;
 
+	public function __construct()
+	{
+		$this->birthdate = new \DateTime();
+	}
 
     /**
      * Get id

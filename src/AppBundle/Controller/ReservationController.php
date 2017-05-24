@@ -9,13 +9,14 @@
 namespace AppBundle\Controller;
 
 
+use AppBundle\Form\VisitorType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Response;
 use AppBundle\Entity\Reservation;
 use AppBundle\Entity\Visitor;
-
 use AppBundle\Form\ReservationType;
+
 
 
 class ReservationController extends Controller
@@ -23,7 +24,7 @@ class ReservationController extends Controller
 	/**
 	 * @Route("/")
 	 */
-	public function showAction()
+	public function formReservationAction()
 	{
 		$em = $this->getDoctrine()->getManager();
 
@@ -44,9 +45,34 @@ class ReservationController extends Controller
 			->findBy(array('reservation' => $reservation))
 		;
 
+		// Formulaire réservation
+		$reservationEntity = new Reservation();
+		$reservationForm = $this
+			->get('form.factory')
+			->create(ReservationType::class, $reservationEntity)
+		;
+
+
 		return $this->render('reservation/form1.html.twig',[
-			'reservation' => $reservation,
-			'listVisitors' => $listVisitors
+			'reservation'		=> $reservation,
+			'listVisitors'		=> $listVisitors,
+			'reservationForm'	=> $reservationForm->createView(),
+		]);
+	}
+
+	/**
+	 * @Route("/visitors/")
+	 */
+	public function formVisitorAction()
+	{
+		$visitorEntity = new Visitor();
+		$visitorForm = $this
+			->get('form.factory')
+			->create(VisitorType::class, $visitorEntity)
+		;
+
+		return $this->render('reservation/form2.html.twig',[
+			'visitorForm'	=> $visitorForm->createView(),
 		]);
 	}
 
