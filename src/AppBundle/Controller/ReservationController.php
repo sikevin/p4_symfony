@@ -22,7 +22,7 @@ use AppBundle\Form\ReservationType;
 class ReservationController extends Controller
 {
 	/**
-	 * @Route("/")
+	 * @Route("/", name="form_reserv")
 	 */
 	public function formReservationAction()
 	{
@@ -61,7 +61,7 @@ class ReservationController extends Controller
 	}
 
 	/**
-	 * @Route("/visitors/")
+	 * @Route("/visitors/", name="form_visitor")
 	 */
 	public function formVisitorAction()
 	{

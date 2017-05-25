@@ -78,8 +78,9 @@
         </div>
 
         <div class="form-group">
-            <button class="btn btn-default">Précédent</button>
-            {{ form_widget(reservationForm.next, {'label': 'Suivant'}) }}
+            <a href=" {{path('form_visitor') }}">
+                <button class="btn btn-default">Suivant</button>
+            </a>
         </div>
     </div>
 
