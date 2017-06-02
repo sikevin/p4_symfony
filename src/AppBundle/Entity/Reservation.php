@@ -3,7 +3,6 @@
 namespace AppBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity
@@ -20,7 +19,6 @@ class Reservation
 
 	/**
 	 * @ORM\Column(type="date")
-	 * @Assert\DateTime()
 	 */
     private $reservationDate;
 
@@ -36,21 +34,11 @@ class Reservation
 
 	/**
 	 * @ORM\Column(type="string", length=255)
-	 * @Assert\Email(
-	 *     message = "L'adresse email '{{ value }}' n'est pas valide.",
-	 *     checkMX = true
-	 *   )
 	 */
     private $email;
 
 	/**
 	 * @ORM\Column(type="integer")
-	 * @Assert\Range(
-	 *     min = 1,
-	 *     max = 20,
-	 *     minMessage = "Vous devez prendre au moins 1 billet pour commander",
-	 *     maxMessage = "Vous de pouvez pas prendre plus de 20 billets"
-	 * )
 	 */
 	private $visitors;
 

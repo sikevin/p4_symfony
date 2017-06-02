@@ -1,9 +1,6 @@
-.imgTitle
+h4:not(:first-child)
 {
-    text-align: center;
-}
-
-.center
-{
-    text-align: center;
+    margin-top: 40px;
+    padding-top:20px;
+    border-top: thin #CCC solid;
 }

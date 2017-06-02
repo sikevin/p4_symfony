@@ -7,12 +7,13 @@
             <link href="{{ asset('favicon.png') }}" rel="icon" type="image/ico">
             <link rel="stylesheet" href="{{ asset('styles/style.css') }}">
             <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+            <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
         {% endblock %}
     </head>
     <body>
         <div class="container">
             <div class="row">
-                <div class="imgTitle">
+                <div class="text-center">
                     <img src="{{ asset('musee_louvre.png') }}" alt="Musée du louvre">
                 </div>
                 {% block body %}

@@ -1,0 +1,92 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}
+    Réservation musée du louvre
+{% endblock %}
+
+{% block body %}
+    <h1>Billetterie officielle</h1>
+    <p>Entrée libre, sans billet, sur présentation d’un justificatif pour
+        les moins de 18 ans, les 18-25 ans résidents de l’Espace Economique Européen,
+        les personnes handicapées et leur accompagnateur, et les bénéficiaires
+        des minima sociaux.<br/>
+        Billet valable seulement le jour sélectionné.</p>
+
+    {# Formulaire #}
+    <h2>Formulaire de réservation</h2>
+
+    <div class="well">
+        <div class="form-group">
+            <p><a href="{{ path('form_reserv') }}">Précédent</a></p>
+            <p><strong>Adresse email:</strong> {{ email }} </p>
+            <p><strong>Date de réservation:</strong> {{ reservationDate|date("d/m/Y") }} </p>
+            <p><strong>Type de billet:</strong> {% if ticketType == true %}Journée{% else %}Demi-Journée{% endif %} </p>
+            <p><strong>Nombre de visiteurs</strong>: {{ visitors }} </p>
+        </div>
+    </div>
+
+    <div class="well">
+        <div class="fullForm">
+            {% for i in 1..visitors %}
+                {{ form(visitorForm) }}
+            {% endfor %}
+        </div>
+    </div>
+
+{#
+    <script type="text/javascript">
+        var i = 0;
+
+        var lastnameList    =   jQuery('#appbundle_visitor_lastname');
+        var firstnameList   =   jQuery('#appbundle_visitor_firstname');
+        var countryList     =   jQuery('#appbundle_visitor_country');
+        var birthdateList   =   jQuery('#appbundle_visitor_birthdate');
+        var tariffList      =   jQuery('#appbundle_visitor_tariff');
+
+        // grab the prototype template
+        var newLastname     =   lastnameList.attr('data-prototype');
+        var newFirstname    =   firstnameList.attr('data-prototype');
+        var newCountry      =   countryList.attr('data-prototype');
+        var newBirthdate    =   birthdateList.attr('data-prototype');
+        var newTariff       =   tariffList.attr('data-prototype');
+
+            // replace the "__name__" used in the id and name of the prototype
+            // with a number that's unique to your emails
+            // end name attribute looks like name="contact[emails][2]"
+            newLastname = newLastname
+                .replace(/__name__label__/g, 'Nom')
+                .replace(/__name__/g,           i)
+            ;
+            newFirstname = newFirstname
+                .replace(/__name__label__/g, 'Prénom')
+                .replace(/__name__/g,           i)
+            ;
+            newCountry = newCountry
+                .replace(/__name__label__/g, 'Pays')
+                .replace(/__name__/g,           i)
+            ;
+            newBirthdate = newBirthdate
+                .replace(/__name__label__/g, 'Date de naissance')
+                .replace(/__name__/g,           i)
+            ;
+            newTariff = newTariff
+                .replace(/__name__label__/g, "Tarif réduit (il vous sera demandé de présenter votre carte d’étudiante, militaire, ou équivalent)")
+                .replace(/__name__/g,           i)
+            ;
+
+            i++;
+                // create a new list element and add it to the list
+
+            var newLablastName = jQuery('<div class="form-group"></div>').html(newLastname);
+            newLablastName.appendTo(".fullForm");
+            var newLabfirstName = jQuery('<div class="form-group"></div>').html(newFirstname);
+            newLabfirstName.appendTo(".fullForm");
+            var newLabcountry = jQuery('<div class="form-group"></div>').html(newCountry);
+            newLabcountry.appendTo(".fullForm");
+            var newLabBirthdate = jQuery('<div class="form-group"></div>').html(newBirthdate);
+            newLabBirthdate.appendTo(".fullForm");
+            var newLabTariff = jQuery('<div class="form-group"></div>').html(newTariff);
+            newLabTariff.appendTo(".fullForm");
+
+    </script>#}
+{% endblock %}

@@ -1,0 +1,45 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <h2>Récapitulatif de réservation</h2>
+    <table class="table table-bordered table-hover ">
+        <tr>
+            <th>Nom</th>
+            {% for lastname in lastnames %}
+                <td>{{ lastname }}</td>
+            {% endfor %}
+        </tr>
+        <tr>
+            <th>Prénom</th>
+            {% for firstname in firstnames %}
+                <td>{{ firstname }}</td>
+            {% endfor %}
+        </tr>
+        <tr>
+            <th>Pays</th>
+            {% for country in countries %}
+               <td>{{ country }}</td>
+            {% endfor %}
+        </tr>
+        <tr>
+            <th>Date de naissance</th>
+            {% for birthdate in birthdates %}
+                <td>{{ birthdate|date('d/M/y') }}</td>
+            {% endfor %}
+        </tr>
+        <tr>
+            <th>Tarif réduit ?</th>
+            {% for tariff in tariffs %}
+                {% if tariff == 1 %}
+                        <td>Oui</td>
+                    {% else %}
+                        <td>Non</td>
+                {% endif %}
+            {% endfor %}
+        </tr>
+        <tr>
+            <th>Prix par billet</th>
+            <td></td>
+        </tr>
+    </table>
+{% endblock %}

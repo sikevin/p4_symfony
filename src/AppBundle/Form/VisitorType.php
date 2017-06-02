@@ -8,8 +8,9 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Form\Extension\Core\Type\BirthdayType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
-use Symfony\Component\Form\Extension\Core\Type\SubmitType;
-use Symfony\Component\Form\Extension\Core\Type\CollectionType;
+use Symfony\Component\Form\Extension\Core\Type\CountryType;
+
+use Symfony\Component\Validator\Constraints\Length;
 
 class VisitorType extends AbstractType
 {
@@ -19,17 +20,40 @@ class VisitorType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-			->add('lastname',		TextType::class)
-			->add('firstname',		TextType::class)
-			->add('country',		TextType::class)
-			->add('birthdate',		BirthdayType::class, [
-				'format' => 'dd-MM-yyyy',
-			])
-			->add('tariff',		CheckboxType::class, [
-				'label'	=>	'Tarif réduit (il vous sera demandé de présenter votre carte d’étudiant, militaire, ou équivalent)'
-			])
-			->add('next',		SubmitType::class, array(
-				'attr' => array('class' => 'save'),
+			->add('lastname',		TextType::class, array(
+				'label'			=>	'Nom',
+				'constraints'	=>	new Length(
+					array(
+						'min' 			=> 2,
+						'max' 			=> 255,
+						'minMessage' 	=> 'Minimum de 2 caractères',
+						'maxMessage' 	=> 'Maximum de 255 caractères'
+					)),
+				)
+			)
+			->add('firstname',		TextType::class, array(
+				'label'			=>	'Prénom',
+				'constraints'	=>	new Length(
+					array(
+						'min' 			=> 2,
+						'max' 			=> 255,
+						'minMessage' 	=> 'Minimum de 2 caractères',
+						'maxMessage' 	=> 'Maximum de 255 caractères'
+					))
+				)
+			)
+			->add('country',		CountryType::class, array(
+				'label'			=>	'Pays',
+				'data'			=>	'FR'
+			))
+			->add('birthdate',		BirthdayType::class, array(
+				'label'			=>	'Date de naissance',
+				'format' 	=>	'dd-MM-yyyy',
+			))
+			->add('tariff',		CheckboxType::class, array(
+				'label'			=>	'Tarif (il vous sera demandé de présenter à
+				 l\'accueil votre carte d’étudiant, militaire, ou équivalent)',
+				'required'		=>	'false',
 			))
 		;
     }
@@ -52,3 +76,12 @@ class VisitorType extends AbstractType
         return 'appbundle_visitor';
     }
 }
+
+
+/*
+ * ->add('country',		CollectionType::class, array(
+				'entry_type' 	=>	CountryType::class,
+				'allow_add'		=>	true,
+				'label'			=>	false,
+			))
+ */

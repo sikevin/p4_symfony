@@ -59,6 +59,7 @@ class Visitor
      * @var bool
      *
      * @ORM\Column(name="tariff", type="boolean")
+	 *
      */
     private $tariff;
 

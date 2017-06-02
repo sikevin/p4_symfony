@@ -9,12 +9,19 @@
 namespace AppBundle\Controller;
 
 
-use AppBundle\Form\VisitorType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\Request;
+
 use AppBundle\Entity\Reservation;
 use AppBundle\Entity\Visitor;
+
+use Symfony\Component\Form\Extension\Core\Type\CollectionType;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use AppBundle\Form\VisitorType;
 use AppBundle\Form\ReservationType;
 
 
@@ -24,27 +31,8 @@ class ReservationController extends Controller
 	/**
 	 * @Route("/", name="form_reserv")
 	 */
-	public function formReservationAction()
+	public function formReservationAction(Request $request)
 	{
-		$em = $this->getDoctrine()->getManager();
-
-		$reservationId = 2;
-		$reservation = $em
-			->getRepository('AppBundle:Reservation')
-			->find($reservationId)
-		;
-
-		if (!$reservation)
-		{
-			throw $this->createNotFoundException(
-				'No product found for id '. $reservationId);
-		}
-
-		$listVisitors = $em
-			->getRepository('AppBundle:Visitor')
-			->findBy(array('reservation' => $reservation))
-		;
-
 		// Formulaire réservation
 		$reservationEntity = new Reservation();
 		$reservationForm = $this
@@ -52,10 +40,22 @@ class ReservationController extends Controller
 			->create(ReservationType::class, $reservationEntity)
 		;
 
+		// If form submit
+		if ($request->isMethod('POST') && $reservationForm->handleRequest($request)->isValid())
+		{
+			$em = $this->getDoctrine()->getManager();
 
-		return $this->render('reservation/form1.html.twig',[
-			'reservation'		=> $reservation,
-			'listVisitors'		=> $listVisitors,
+			$em->persist($reservationEntity);
+
+			$session = $request->getSession();
+			$session->set('reservation', 				$reservationEntity);
+
+			$this->addFlash('notice', 'réservation ajouté');
+
+			return $this->redirectToRoute('form_visitor');
+		}
+
+		return $this->render('reservation/reservationForm.html.twig',[
 			'reservationForm'	=> $reservationForm->createView(),
 		]);
 	}
@@ -63,63 +63,77 @@ class ReservationController extends Controller
 	/**
 	 * @Route("/visitors/", name="form_visitor")
 	 */
-	public function formVisitorAction()
+	public function formVisitorAction(Request $request)
 	{
-		$visitorEntity = new Visitor();
+		$session = $request->getSession();
+		$reservation		= $session->get('reservation');
+		$email				= $reservation->getEmail();
+		$reservationDate 	= $reservation->getReservationDate();
+		$ticketType			= $reservation->getTicketType();
+		$visitors			= $reservation->getVisitors();
+
+		for ($i = 1; $i <= $visitors; $i++)
+		{
+			$visitor[] = new Visitor();
+		}
+
 		$visitorForm = $this
 			->get('form.factory')
-			->create(VisitorType::class, $visitorEntity)
-		;
+			->create(CollectionType::class, $visitor,
+				['entry_type' => VisitorType::class])
+			->add('submit',		SubmitType::class, array(
+				'label'		=> 'Suivant',
+				'attr' 		=> array('class' => 'save')));
 
-		return $this->render('reservation/form2.html.twig',[
-			'visitorForm'	=> $visitorForm->createView(),
+		if($email == null)
+		{
+			return $this->redirectToRoute('form_reserv');
+		}
+
+		if ($request->isMethod('POST') && $visitorForm->handleRequest($request)->isValid())
+		{
+			$session = $request->getSession();
+			$session->set('visitors', 				$visitorForm);
+			return $this->redirectToRoute('summary');
+		}
+
+		return $this->render('reservation/visitorForm.html.twig',[
+			'visitorForm'		=> $visitorForm->createView(),
+
+			'email'				=> $email,
+			'reservationDate'	=> $reservationDate,
+			'ticketType'		=> $ticketType,
+			'visitors'			=> $visitors,
 		]);
 	}
 
 	/**
-	 * @Route("/add/")
+	 * @Route("/summary/", name="summary")
 	 */
-	public function createAction()
+	public function summaryAction(Request $request)
 	{
-		// TEST réussi: add a reservation to DB
-		$reservation = new Reservation();
-		$reservation->setReservationDate(new \DateTime('NOW'));
-		$reservation->setTicketType(true);
-		$reservation->setReservationCode("3kEp495Cl");
+		$session = $request->getSession();
+		$visitorsData		= $session->get('visitors');
+		$reservation		= $session->get('reservation');
 
-		$visitor1 = new Visitor();
-		$visitor1->setLastname("SI");
-		$visitor1->setFirstname("Kevin");
-		$visitor1->setCountry("France");
-		$visitor1->setBirthdate(new \DateTime('1995-06-20'));
-		$visitor1->setTariff(false);
+		$visitors			= $reservation->getVisitors();
 
-		$visitor2 = new Visitor();
-		$visitor2->setLastname("SI");
-		$visitor2->setFirstname("Denis");
-		$visitor2->setCountry("France");
-		$visitor2->setBirthdate(new \DateTime('1997-04-18'));
-		$visitor2->setTariff(false);
+		for ($i=0; $i < $visitors; $i++)
+		{
+			$lastnames[]	= $visitorsData[$i]->getLastname();
+			$firstnames[] 	= $visitorsData[$i]->getFirstname();
+			$countries[]	= $visitorsData[$i]->getCountry();
+			$birthdates[]	= $visitorsData[$i]->getBirthdate();
+			$tariffs[]		= $visitorsData[$i]->getTariff();
+		}
 
-		$visitor3 = new Visitor();
-		$visitor3->setLastname("SI");
-		$visitor3->setFirstname("Thierry");
-		$visitor3->setCountry("France");
-		$visitor3->setBirthdate(new \DateTime('2002-01-11'));
-		$visitor3->setTariff(false);
-
-		$visitor1->setReservation($reservation);
-		$visitor2->setReservation($reservation);
-		$visitor3->setReservation($reservation);
-
-		$em = $this->getDoctrine()->getManager();
-
-		$em->persist($visitor1);
-		$em->persist($visitor2);
-		$em->persist($visitor3);
-
-		$em->flush();
-
-		return new Response('Saved new reservation with id' . $reservation->getId());
+		return $this->render('reservation/summary.html.twig', [
+			'lastnames'		=>	$lastnames,
+			'firstnames'	=>	$firstnames,
+			'countries'		=>	$countries,
+			'birthdates'	=>	$birthdates,
+			'tariffs'		=>	$tariffs,
+			'visitors'		=>	$visitors,
+		]);
 	}
 }
