@@ -1,8 +1,9 @@
 {% extends 'base.html.twig' %}
 
+{% block title %}Votre commande{% endblock %}
 {% block body %}
     <h2>Récapitulatif de réservation</h2>
-    <table class="table table-bordered table-hover ">
+    <table class="table table-bordered table-hover">
         <tr>
             <th>Nom</th>
             {% for lastname in lastnames %}
@@ -24,7 +25,7 @@
         <tr>
             <th>Date de naissance</th>
             {% for birthdate in birthdates %}
-                <td>{{ birthdate|date('d/M/y') }}</td>
+                <td>{{ birthdate|date('d/m/Y') }}</td>
             {% endfor %}
         </tr>
         <tr>
@@ -39,7 +40,12 @@
         </tr>
         <tr>
             <th>Prix par billet</th>
-            <td>{{ message }}</td>
+            {% for price in ticketPrice %}
+                <td><strong>{{ price }} €</strong></td>
+            {% endfor %}
         </tr>
     </table>
+    <h4 class="text-right">Total: {{ total }} €</h4>
+
+
 {% endblock %}

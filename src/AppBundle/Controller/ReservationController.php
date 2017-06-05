@@ -8,7 +8,6 @@
 
 namespace AppBundle\Controller;
 
-
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -18,12 +17,13 @@ use Symfony\Component\HttpFoundation\Request;
 
 use AppBundle\Entity\Reservation;
 use AppBundle\Entity\Visitor;
+use AppBundle\Ordervalid\Ordervalid;
 
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use AppBundle\Form\VisitorType;
 use AppBundle\Form\ReservationType;
-
+use Symfony\Component\Validator\Constraints\DateTime;
 
 
 class ReservationController extends Controller
@@ -48,7 +48,7 @@ class ReservationController extends Controller
 			$em->persist($reservationEntity);
 
 			$session = $request->getSession();
-			$session->set('reservation', 				$reservationEntity);
+			$session->set('reservation', $reservationEntity);
 
 			$this->addFlash('notice', 'réservation ajouté');
 
@@ -85,6 +85,8 @@ class ReservationController extends Controller
 				'label'		=> 'Suivant',
 				'attr' 		=> array('class' => 'save')));
 
+
+
 		if($email == null)
 		{
 			return $this->redirectToRoute('form_reserv');
@@ -92,8 +94,16 @@ class ReservationController extends Controller
 
 		if ($request->isMethod('POST') && $visitorForm->handleRequest($request)->isValid())
 		{
+			$em = $this->getDoctrine()->getManager();
 			$session = $request->getSession();
-			$session->set('visitors', 				$visitorForm);
+			foreach ($visitor as $key => $value)
+			{
+				$em->persist($visitor[$key]);
+			}
+			$session->set('visitors', $visitor);
+
+			$this->addFlash('notice', 'visiteurs ajouté');
+
 			return $this->redirectToRoute('summary');
 		}
 
@@ -127,6 +137,18 @@ class ReservationController extends Controller
 			$tariffs[]		= $visitorsData[$i]->getTariff();
 		}
 
+		$ordervalid = new Ordervalid();
+		$ticketPrice = $ordervalid->ticketPrice($tariffs, $birthdates);
+
+		dump($ticketPrice);
+
+		//	Prix total de la commande
+		$total = 0;
+		foreach ($ticketPrice as $value)
+		{
+			$total += $value;
+		}
+
 		return $this->render('reservation/summary.html.twig', [
 			'lastnames'		=>	$lastnames,
 			'firstnames'	=>	$firstnames,
@@ -134,6 +156,8 @@ class ReservationController extends Controller
 			'birthdates'	=>	$birthdates,
 			'tariffs'		=>	$tariffs,
 			'visitors'		=>	$visitors,
+			'ticketPrice'	=>	$ticketPrice,
+			'total'			=>	$total,
 		]);
 	}
 }

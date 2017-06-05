@@ -76,12 +76,3 @@ class VisitorType extends AbstractType
         return 'appbundle_visitor';
     }
 }
-
-
-/*
- * ->add('country',		CollectionType::class, array(
-				'entry_type' 	=>	CountryType::class,
-				'allow_add'		=>	true,
-				'label'			=>	false,
-			))
- */
