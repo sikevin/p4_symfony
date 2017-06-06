@@ -53,7 +53,7 @@ class VisitorType extends AbstractType
 			->add('tariff',		CheckboxType::class, array(
 				'label'			=>	'Tarif (il vous sera demandé de présenter à
 				 l\'accueil votre carte d’étudiant, militaire, ou équivalent)',
-				'required'		=>	'false',
+				'required'		=>	false,
 			))
 		;
     }

@@ -140,7 +140,12 @@ class ReservationController extends Controller
 		$ordervalid = new Ordervalid();
 		$ticketPrice = $ordervalid->ticketPrice($tariffs, $birthdates);
 
-		dump($ticketPrice);
+		foreach ($tariffs as $key => $value)
+		{
+			if($tariffs[$key] == true){
+				$ticketPrice[$key] = 10;
+			}
+		}
 
 		//	Prix total de la commande
 		$total = 0;

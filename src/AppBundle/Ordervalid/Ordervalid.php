@@ -18,34 +18,24 @@ class Ordervalid
 		$age = $this->getAge($birthdates);
 		dump($age);
 
-		foreach ($tariffs as $key => $value)
+		foreach ($age as $indivAge)
 		{
-			if($tariffs[$key] == 1){
-
-				$message[] = 10;
+			if($indivAge >= 4 && $indivAge < 12) {
+				$price[] = 8; //€
 			}
-			else if ($tariffs[$key] == 0)
-			{
-				unset($message);
-				foreach ($age as $indivAge)
-				{
-					if($indivAge >= 4 && $indivAge <= 12) {
-						$message[] = 8;
-					}
-					else if($indivAge >= 60) {
-						$message[] = 12;
-					}
-					else if($indivAge > 12) {
-						$message[] = 16;
-					}
-					else{
-						$message[] = 0;
-					}
-				}
+			else if($indivAge >= 60) {
+				$price[] = 12; //€
+			}
+			else if($indivAge >= 12) {
+				$price[] = 16; //€
+			}
+			else{
+				$price[] = 0; //€
 			}
 		}
 
-		return $message;
+
+		return $price;
 	}
 
 	public function getAge($birthdates)

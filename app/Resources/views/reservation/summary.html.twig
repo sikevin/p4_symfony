@@ -48,4 +48,17 @@
     <h4 class="text-right">Total: {{ total }} €</h4>
 
 
+    <form action="{{ path('summary') }}" method="POST">
+        <script
+                src="URL_DE_STRIPE/checkout.js" class="stripe-button"
+                data-key="pk_test_LQgIJa9tPe000ePbsB6TdzAF"
+                data-amount="99500"
+                data-name="oc-stripe"
+                data-description="Widget"
+                data-locale="auto"
+                data-currency="eur">
+        </script>
+    </form>
+
+
 {% endblock %}
