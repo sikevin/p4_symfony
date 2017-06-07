@@ -48,15 +48,19 @@
     <h4 class="text-right">Total: {{ total }} €</h4>
 
 
-    <form action="{{ path('summary') }}" method="POST">
+    <form action="{{ path('order_checkout') }}" method="POST" class="text-right">
         <script
-                src="URL_DE_STRIPE/checkout.js" class="stripe-button"
+                src="https://checkout.stripe.com/checkout.js" class="stripe-button"
                 data-key="pk_test_LQgIJa9tPe000ePbsB6TdzAF"
-                data-amount="99500"
-                data-name="oc-stripe"
-                data-description="Widget"
+                data-amount="{{ total }}00"
+                data-name="Musée du louvre"
+                data-description="Réservation de billet"
+                data-image="{{ asset('louvre.jpg') }}"
                 data-locale="auto"
-                data-currency="eur">
+                data-zip-code="true"
+                data-currency="eur"
+                data-label="Payer avec votre carte"
+                data-allow-remember-me="false">
         </script>
     </form>
 

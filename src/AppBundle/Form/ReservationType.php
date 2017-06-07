@@ -13,7 +13,8 @@ use Symfony\Component\Form\Extension\Core\Type\EmailType;
 
 use Symfony\Component\Validator\Constraints\GreaterThanOrEqual;
 use Symfony\Component\Validator\Constraints\Length;
-use Symfony\Component\Validator\Constraints\Date;
+use Symfony\Component\Validator\Constraints\NotEqualTo;
+use Symfony\Component\Validator\Constraints\NotIdenticalTo;
 use Symfony\Component\Validator\Constraints\Range;
 
 
@@ -40,28 +41,34 @@ class ReservationType extends AbstractType
 				'label'			=> 'Date de réservation',
 				'format'	 	=> 'dd-MM-yyyy',
 				'years'		 	=> range(2017, 2037),
-				'constraints'	=> [
-					new GreaterThanOrEqual("today")
-				]
+				'constraints'	=>
+					new GreaterThanOrEqual(
+						array(
+							"value" => "today",
+							"message" => "La date de visite doit être au moins celle d'aujourd'hui."
+						)
+					),
 				)
 			)
 			->add('ticketType',		ChoiceType::class, array(
 				'label'			=> 'Type de billet',
 				"choices" => array(
-					'Journée' 		=> 'true',
-					'Demi-journée'	=> 'false'
+					'Journée' 		=> true,
+					'Demi-journée'	=> false
 				),
 				)
 			)
 			->add('visitors', ChoiceType::class, array(
 				'label'			=> 'Nombre de visiteurs',
 				"choices" 		=> range(0, 20),
-				"constraints" 	=> new Range(
-					array(
-						'min' 				=> 1,
-						'minMessage' 		=> "Il doit y avoir au moins 1 visiteur pour réserver.",
-						'invalidMessage'	=> "Vous devez entrer un nombre."
-					))
+				"constraints" 	=>
+					new Range(
+						array(
+							'min' 				=> '1',
+							'minMessage' 		=> "Il doit y avoir au moins 1 visiteur pour réserver.",
+							'invalidMessage'	=> "Vous devez entrer un nombre."
+						)
+					),
 				)
 			)
 			->add('submit', SubmitType::class, array(

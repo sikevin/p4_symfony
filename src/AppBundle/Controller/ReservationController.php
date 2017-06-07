@@ -85,8 +85,7 @@ class ReservationController extends Controller
 				'label'		=> 'Suivant',
 				'attr' 		=> array('class' => 'save')));
 
-
-
+		dump($visitorForm);
 		if($email == null)
 		{
 			return $this->redirectToRoute('form_reserv');
@@ -153,6 +152,7 @@ class ReservationController extends Controller
 		{
 			$total += $value;
 		}
+		$session->set('total', $total);
 
 		return $this->render('reservation/summary.html.twig', [
 			'lastnames'		=>	$lastnames,
@@ -164,5 +164,34 @@ class ReservationController extends Controller
 			'ticketPrice'	=>	$ticketPrice,
 			'total'			=>	$total,
 		]);
+	}
+
+	/**
+	 * @Route(
+	 *     "/checkout",
+	 *     name="order_checkout",
+	 *     methods="POST"
+	 * )
+	 */
+	public function checkoutAction(Request $request)
+	{
+		$session = $request->getSession();
+		$total = $session->get('total');
+
+		// Set your secret key: remember to change this to your live secret key in production
+		// See your keys here: https://dashboard.stripe.com/account/apikeys
+		\Stripe\Stripe::setApiKey("sk_test_WcieSviH58jVYnWyqBr4CCCY");
+
+		// Token is created using Stripe.js or Checkout!
+		//// Get the payment token submitted by the form:
+		$token = $_POST['stripeToken'];
+
+		// Charge the user's card:
+		$charge = \Stripe\Charge::create(array(
+			"amount" => $total * 100,
+			"currency" => "eur",
+			"description" => "Example charge",
+			"source" => $token,
+		));
 	}
 }

@@ -22,6 +22,11 @@
             </div>
         </div>
         {% block javascripts %}
+            <script src="https://js.stripe.com/v3/"></script>
+            <script>
+                var stripe = Stripe('pk_test_LQgIJa9tPe000ePbsB6TdzAF');
+                var elements = stripe.elements();
+            </script>
         {% endblock %}
     </body>
 </html>

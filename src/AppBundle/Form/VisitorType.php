@@ -9,6 +9,7 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Form\Extension\Core\Type\BirthdayType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\CountryType;
+use Symfony\Component\Validator\Constraints\LessThan;
 
 use Symfony\Component\Validator\Constraints\Length;
 
@@ -49,6 +50,12 @@ class VisitorType extends AbstractType
 			->add('birthdate',		BirthdayType::class, array(
 				'label'			=>	'Date de naissance',
 				'format' 	=>	'dd-MM-yyyy',
+				'constraints'	=> new LessThan(
+					array(
+						"value" => "today",
+						"message" => "La date de naissance doit être antérieur à celle d'aujourd'hui."
+					)
+				)
 			))
 			->add('tariff',		CheckboxType::class, array(
 				'label'			=>	'Tarif (il vous sera demandé de présenter à
