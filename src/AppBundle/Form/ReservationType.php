@@ -40,7 +40,9 @@ class ReservationType extends AbstractType
 			->add('reservationDate',	DateType::class, array(
 				'label'			=> 'Date de réservation',
 				'format'	 	=> 'dd-MM-yyyy',
-				'years'		 	=> range(2017, 2037),
+				'widget' 		=> 'single_text',
+				'html5' 		=> false,
+				'attr'			=> ['class' => 'datepicker'],
 				'constraints'	=>
 					new GreaterThanOrEqual(
 						array(

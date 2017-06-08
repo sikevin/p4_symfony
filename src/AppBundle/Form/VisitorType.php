@@ -50,6 +50,9 @@ class VisitorType extends AbstractType
 			->add('birthdate',		BirthdayType::class, array(
 				'label'			=>	'Date de naissance',
 				'format' 	=>	'dd-MM-yyyy',
+				'widget' 		=> 'single_text',
+				'html5' 		=> false,
+				'attr'			=> ['class' => 'datepicker'],
 				'constraints'	=> new LessThan(
 					array(
 						"value" => "today",

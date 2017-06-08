@@ -8,7 +8,7 @@
             <link rel="stylesheet" href="{{ asset('styles/style.css') }}">
             <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
             <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
-            <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+            <link rel="stylesheet" href="{{ asset('../components/bootstrap-datepicker/bootstrap-datepicker-built.css') }}">
         {% endblock %}
     </head>
     <body>
@@ -23,10 +23,18 @@
             </div>
         </div>
         {% block javascripts %}
-            <script src="https://js.stripe.com/v3/"></script>
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+            <script src="{{ asset('../components/bootstrap-datepicker/bootstrap-datepicker-built.js') }}"></script>
+            <script src="{{ asset('../components/bootstrap-datepicker/js/locales/bootstrap-datepicker.fr.js') }}" charset="UTF-8"></script>
             <script>
-                var stripe = Stripe('pk_test_LQgIJa9tPe000ePbsB6TdzAF');
-                var elements = stripe.elements();
+                $(document).ready(function() {
+                    $('.datepicker').datepicker({
+                        format: 'dd-mm-yyyy',
+                        language: 'fr',
+                        daysOfWeekDisabled: [2],
+                        datesDisabled: ['01-05-yyyy', '01-11-yyyy', '25-12-yyyy']
+                    });
+                });
             </script>
         {% endblock %}
     </body>

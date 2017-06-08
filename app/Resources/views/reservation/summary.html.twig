@@ -58,7 +58,6 @@
 
     <h4 class="text-right">Total: {{ total }} €</h4>
 
-
     <form action="{{ path('order_checkout') }}" method="POST" class="text-right">
         <script
                 src="https://checkout.stripe.com/checkout.js" class="stripe-button"
@@ -75,5 +74,10 @@
         </script>
     </form>
 
+    <script src="https://js.stripe.com/v3/"></script>
+    <script>
+        var stripe = Stripe('pk_test_LQgIJa9tPe000ePbsB6TdzAF');
+        var elements = stripe.elements();
+    </script>
 
 {% endblock %}
