@@ -3,6 +3,15 @@
 {% block title %}Votre commande{% endblock %}
 {% block body %}
     <h2>Récapitulatif de réservation</h2>
+
+    <p class="text-uppercase lead ">
+        Billet
+        {% if ticketType == true %}
+            Journée
+        {% else %}
+            Demi-Journée
+        {% endif %}
+    </p>
     <table class="table table-bordered table-hover">
         <tr>
             <th>Nom</th>
@@ -45,6 +54,8 @@
             {% endfor %}
         </tr>
     </table>
+
+
     <h4 class="text-right">Total: {{ total }} €</h4>
 
 

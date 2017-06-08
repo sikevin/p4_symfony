@@ -1,0 +1,12 @@
+{% extends 'base.html.twig' %}
+{% block body %}
+    <h1 class="jumbotron text-center">
+        Réservation confirmé   <i class="fa fa-hand-peace-o" aria-hidden="true"></i>
+    </h1>
+    <p class="lead text-center">
+        Vos billets ont bien été envoyé à l'adresse email suivante :<br/>
+        <strong>{{ email }}</strong>  <i class="fa fa-paper-plane-o" aria-hidden="true"></i>
+    </p>
+
+    <p class="text-center lead">À bientôt !</p>
+{% endblock %}

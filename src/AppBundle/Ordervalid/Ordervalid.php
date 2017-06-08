@@ -13,24 +13,41 @@ use Symfony\Component\Validator\Constraints\DateTime;
 
 class Ordervalid
 {
-	public function ticketPrice($tariffs, $birthdates)
+	public function ticketPrice($birthdates, $ticketType)
 	{
 		$age = $this->getAge($birthdates);
-		dump($age);
 
 		foreach ($age as $indivAge)
 		{
 			if($indivAge >= 4 && $indivAge < 12) {
-				$price[] = 8; //€
+
+				if ($ticketType == false)
+				{
+					$price[] = 4;
+				}
+				else{
+					$price[] = 8; //€
+				}
 			}
 			else if($indivAge >= 60) {
-				$price[] = 12; //€
+
+				if ($ticketType == false)
+				{
+					$price[] = 6;
+				}
+				else{$price[] = 12; //€
+				}
 			}
 			else if($indivAge >= 12) {
-				$price[] = 16; //€
+
+				if ($ticketType == false)
+				{
+					$price[] = 8;
+				}else{$price[] = 16; //€
+				}
 			}
 			else{
-				$price[] = 0; //€
+				$price[] = 0; //€‡
 			}
 		}
 
@@ -46,7 +63,6 @@ class Ordervalid
 		{
 			$birthdateY = date_format($value, 'Y');
 			$age[] = $year - $birthdateY;
-
 		}
 		return $age;
 	}

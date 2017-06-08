@@ -85,7 +85,6 @@ class ReservationController extends Controller
 				'label'		=> 'Suivant',
 				'attr' 		=> array('class' => 'save')));
 
-		dump($visitorForm);
 		if($email == null)
 		{
 			return $this->redirectToRoute('form_reserv');
@@ -125,6 +124,7 @@ class ReservationController extends Controller
 		$visitorsData		= $session->get('visitors');
 		$reservation		= $session->get('reservation');
 
+		$ticketType			= $reservation->getTicketType();
 		$visitors			= $reservation->getVisitors();
 
 		for ($i=0; $i < $visitors; $i++)
@@ -137,12 +137,17 @@ class ReservationController extends Controller
 		}
 
 		$ordervalid = new Ordervalid();
-		$ticketPrice = $ordervalid->ticketPrice($tariffs, $birthdates);
+		$ticketPrice = $ordervalid->ticketPrice( $birthdates, $ticketType);
 
 		foreach ($tariffs as $key => $value)
 		{
-			if($tariffs[$key] == true){
+			//	Vérification tarif réduit
+			if($tariffs[$key] == true && $ticketType == true){
 				$ticketPrice[$key] = 10;
+			}
+			else if ($tariffs[$key] == true && $ticketType == false)
+			{
+				$ticketPrice[$key] = 5;
 			}
 		}
 
@@ -152,6 +157,8 @@ class ReservationController extends Controller
 		{
 			$total += $value;
 		}
+
+		// Mis en session pour le récupérer dans le controller checkoutAction
 		$session->set('total', $total);
 
 		return $this->render('reservation/summary.html.twig', [
@@ -162,6 +169,7 @@ class ReservationController extends Controller
 			'tariffs'		=>	$tariffs,
 			'visitors'		=>	$visitors,
 			'ticketPrice'	=>	$ticketPrice,
+			'ticketType'	=>	$ticketType,
 			'total'			=>	$total,
 		]);
 	}
@@ -185,13 +193,38 @@ class ReservationController extends Controller
 		// Token is created using Stripe.js or Checkout!
 		//// Get the payment token submitted by the form:
 		$token = $_POST['stripeToken'];
+		try {
+			// Charge the user's card:
+			$charge = \Stripe\Charge::create(array(
+				"amount" => $total * 100,
+				"currency" => "eur",
+				"description" => "Réservation de billets pour le musée du Louvre",
+				"source" => $token,
+			));
+			$this->addFlash("success","Réservation confirmé !");
+			return $this->redirectToRoute("booking_validated");
+		}
+		catch (\Stripe\Error\Card $e)
+		{
+			$this->addFlash("error","Un erreur est survenu lors du paiement, veuillez retenter.");
+			return $this->redirectToRoute("summary");
+			// The card has been declined
+		}
+	}
 
-		// Charge the user's card:
-		$charge = \Stripe\Charge::create(array(
-			"amount" => $total * 100,
-			"currency" => "eur",
-			"description" => "Example charge",
-			"source" => $token,
-		));
+	/**
+	 * @Route(
+	 *     "/booking-validated",
+	 *     name="booking_validated"
+	 * )
+	 */
+	public function bookingValAction(Request $request)
+	{
+		$session = $request->getSession();
+		$email = $session->get('reservation')->getEmail();
+
+		return $this->render('reservation/validated.html.twig', [
+			'email' => $email
+		]);
 	}
 }
