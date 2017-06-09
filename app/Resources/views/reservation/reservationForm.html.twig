@@ -26,4 +26,37 @@
         </div>
     </div>
 
+    <script>
+        $(document).ready(function() {
+            //  Impossibilité de commander billet journée après 14H
+            var d = new Date();
+            //  On récupère et formate la date d'aujourd'hui
+            var hours = 14;
+            var day = d.getDate();
+            var month = d.getMonth()+1;
+            var year = d.getFullYear();
+            var currentDate = '0'+day + '-' + '0' + month + '-' + year;
+            $('#appbundle_reservation_reservationDate').blur(function()
+            {
+                //  On récupère la date entré dans le champ date réservation
+                var reservationDate = $('#appbundle_reservation_reservationDate').val();
+                /*  Si l'heure actuel est >= à 14h et que le jour de réservation
+                 est égale à aujourd'hui, on enlève billet Journée
+                 */
+                if(hours >= 14 && currentDate == reservationDate) {
+                    $('.demi-journée').css('display', 'none');
+                    $('.journée').val(0);
+                    $('.journée').html('Demi-journée');
+                }
+                /*  Sinon on remet le billet journée
+                 */
+                else if( currentDate != reservationDate)
+                {
+                    $('.demi-journée').css('display', 'block');
+                    $('.journée').val(1);
+                    $('.journée').html('Journée');
+                }
+            });
+        });
+    </script>
 {% endblock %}
