@@ -4,3 +4,11 @@ h4:not(:first-child)
     padding-top:20px;
     border-top: thin #CCC solid;
 }
+
+.fullMessage
+{
+    padding: 10px;
+    padding-left:30px;
+    border-radius: 5px;
+    color:firebrick;
+}

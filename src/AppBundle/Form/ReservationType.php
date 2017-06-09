@@ -58,6 +58,11 @@ class ReservationType extends AbstractType
 					'Journée' 		=> true,
 					'Demi-journée'	=> false
 				),
+				'choice_attr' => function($val, $key, $index) {
+						// adds a class like attending_yes, attending_no, etc
+						return ['class' => strtolower($key)];
+				},
+
 				)
 			)
 			->add('visitors', ChoiceType::class, array(

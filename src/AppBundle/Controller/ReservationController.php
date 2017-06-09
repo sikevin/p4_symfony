@@ -8,12 +8,13 @@
 
 namespace AppBundle\Controller;
 
+use Doctrine\DBAL\Types\DateType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Session\Session;
 
 use AppBundle\Entity\Reservation;
 use AppBundle\Entity\Visitor;
@@ -23,7 +24,6 @@ use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use AppBundle\Form\VisitorType;
 use AppBundle\Form\ReservationType;
-use Symfony\Component\Validator\Constraints\DateTime;
 
 
 class ReservationController extends Controller
@@ -50,9 +50,25 @@ class ReservationController extends Controller
 			$session = $request->getSession();
 			$session->set('reservation', $reservationEntity);
 
-			$this->addFlash('notice', 'réservation ajouté');
+			$repository = $em->getRepository('AppBundle:Reservation');
+			$bookingList = $repository->findByReservationDate($session->get('reservation')->getReservationDate());
 
-			return $this->redirectToRoute('form_visitor');
+			$nbVisitors = 0;
+			foreach($bookingList as $visitors)
+			{
+				$nbVisitors =  $nbVisitors + $visitors->getVisitors();
+			}
+
+			if($nbVisitors >= 1000)
+			{
+				// add flash messages
+				$this->get('session')->getFlashBag()->add('error', 'Le nombre maximal de billet vendu pour ce jour a été atteint. Veuillez sélectionner une autre date.');
+				return $this->redirectToRoute('form_reserv');
+			}
+			else
+			{
+				return $this->redirectToRoute('form_visitor');
+			}
 		}
 
 		return $this->render('reservation/reservationForm.html.twig',[

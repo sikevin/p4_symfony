@@ -32,7 +32,50 @@
                         format: 'dd-mm-yyyy',
                         language: 'fr',
                         daysOfWeekDisabled: [2],
-                        datesDisabled: ['01-05-yyyy', '01-11-yyyy', '25-12-yyyy']
+                        datesDisabled: ['01-05-yyyy', '01-11-yyyy', '25-12-yyyy'],
+                        changeMonth: true,
+                        changeYear: true,
+                        beforeShowDay: function (date, inst) {
+                            var today = new Date();
+
+                            today = Date.parse(today.getMonth()+1+'/'+today.getDate()+'/'+today.getFullYear());
+
+                            var selDate = Date.parse(date);
+
+                            if (selDate > today) {
+                                $('.datepicker').val('');
+                                $(inst).datepicker('show');
+                                return [false, ''];
+                            }
+                            else {
+                                return [true, ''];
+                            }
+
+                        }
+
+                    });
+                    $('.datepicker-birthdate').datepicker({
+                        format: 'dd-mm-yyyy',
+                        language: 'fr',
+                        changeMonth: true,
+                        changeYear: true,
+                        beforeShowDay: function (date, inst) {
+                            var today = new Date();
+
+                            today = Date.parse(today.getMonth()+1+'/'+today.getDate()+'/'+today.getFullYear());
+
+                            var selDate = Date.parse(date);
+
+                            if (selDate > today) {
+                                $('.datepicker-birthdate').val('');
+                                $(inst).datepicker('show');
+                                return [false, ''];
+                            }
+                            else {
+                                return [true, ''];
+                            }
+
+                        }
                     });
                 });
             </script>

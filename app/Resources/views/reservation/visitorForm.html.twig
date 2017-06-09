@@ -21,8 +21,18 @@
     <div class="well">
         <div class="fullForm">
             {% for i in 1..visitors %}
-                {{ form(visitorForm) }}
+                <h4>Billet {{ i }}</h4>
+                {{ form_start(visitorForm) }}
+                {{ form_row(visitorForm[i-1].lastname) }}
+                {{ form_row(visitorForm[i-1].firstname) }}
+                {{ form_row(visitorForm[i-1].country) }}
+                {{ form_row(visitorForm[i-1].birthdate) }}
+                {{ form_row(visitorForm[i-1].tariff) }}
             {% endfor %}
+            <div class="text-right">
+                {{ form_rest(visitorForm) }}
+                {{ form_end(visitorForm) }}
+            </div>
         </div>
     </div>
 

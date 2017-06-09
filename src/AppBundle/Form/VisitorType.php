@@ -52,7 +52,7 @@ class VisitorType extends AbstractType
 				'format' 	=>	'dd-MM-yyyy',
 				'widget' 		=> 'single_text',
 				'html5' 		=> false,
-				'attr'			=> ['class' => 'datepicker'],
+				'attr'			=> ['class' => 'datepicker-birthdate'],
 				'constraints'	=> new LessThan(
 					array(
 						"value" => "today",
