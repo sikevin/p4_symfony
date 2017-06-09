@@ -109,7 +109,9 @@ class ReservationController extends Controller
 		if ($request->isMethod('POST') && $visitorForm->handleRequest($request)->isValid())
 		{
 			$em = $this->getDoctrine()->getManager();
+
 			$session = $request->getSession();
+
 			foreach ($visitor as $key => $value)
 			{
 				$em->persist($visitor[$key]);
@@ -217,7 +219,54 @@ class ReservationController extends Controller
 				"description" => "Réservation de billets pour le musée du Louvre",
 				"source" => $token,
 			));
-			$this->addFlash("success","Réservation confirmé !");
+
+			//	Insérer la réservation dans la bdd
+			$em = $this->getDoctrine()->getManager();
+			$ordervalid = new Ordervalid();
+			$reservationCode = $ordervalid->reservationCode();
+
+			//	Appelle des données en session
+			$session = $request->getSession();
+			//	Formulaire information du visiteur
+			$visitorsData		= $session->get('visitors');
+			//	Formulaire information sur la réservation
+			$reservation		= $session->get('reservation');
+
+			$email				= $reservation->getEmail();
+			$reservationDate 	= $reservation->getReservationDate();
+			$ticketType			= $reservation->getTicketType();
+			$visitors			= $reservation->getVisitors();
+
+			// Met dans l'entité Réservation les données du formulaire de réservation
+			$reservationEntity = new Reservation();
+			$reservationEntity->setEmail($email);
+			$reservationEntity->setReservationDate($reservationDate);
+			$reservationEntity->setTicketType($ticketType);
+			$reservationEntity->setVisitors($visitors);
+			$reservationEntity->setReservationCode($reservationCode);
+			$em->persist($reservationEntity);
+
+			for ($i=0; $i < $visitors; $i++)
+			{
+				$lastnames[]	= $visitorsData[$i]->getLastname();
+				$firstnames[] 	= $visitorsData[$i]->getFirstname();
+				$countries[]	= $visitorsData[$i]->getCountry();
+				$birthdates[]	= $visitorsData[$i]->getBirthdate();
+				$tariffs[]		= $visitorsData[$i]->getTariff();
+
+				// Met dans l'entitié visitor les données du formulaire visiteur
+				$visitorEntity = new Visitor();
+				$visitorEntity->setReservation($reservationEntity);
+				$visitorEntity->setLastname($lastnames[$i]);
+				$visitorEntity->setFirstname($firstnames[$i]);
+				$visitorEntity->setCountry($countries[$i]);
+				$visitorEntity->setBirthdate($birthdates[$i]);
+				$visitorEntity->setTariff($tariffs[$i]);
+				$em->persist($visitorEntity);
+			}
+
+			$em->flush();
+
 			return $this->redirectToRoute("booking_validated");
 		}
 		catch (\Stripe\Error\Card $e)
@@ -240,7 +289,7 @@ class ReservationController extends Controller
 		$email = $session->get('reservation')->getEmail();
 
 		return $this->render('reservation/validated.html.twig', [
-			'email' => $email
+			'email' => $email,
 		]);
 	}
 }

@@ -69,7 +69,14 @@ class Ordervalid
 
 	public function reservationCode()
 	{
+		$characters    = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
+		$reservationCode      = '';
 
+		for($i=0;$i < 10;$i++)    //10 est le nombre de caractères
+		{
+			$reservationCode .= substr($characters,rand()%(strlen($characters)),2);
+		}
+		return $reservationCode;
 	}
 
 }
