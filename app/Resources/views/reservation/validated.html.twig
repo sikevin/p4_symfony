@@ -1,12 +1,20 @@
 {% extends 'base.html.twig' %}
+{% block title %}
+    Billet envoyé !
+{% endblock %}
 {% block body %}
-    <h1 class="jumbotron text-center">
-        Réservation confirmé   <i class="fa fa-hand-peace-o" aria-hidden="true"></i>
-    </h1>
+    <div class="jumbotron text-center">
+        <h1 class="">
+            Réservation confirmé   <i class="fa fa-hand-peace-o" aria-hidden="true"></i>
+        </h1>
+        <p><a href="{{ path('form_reserv') }}">Retourner à la billetterie</a></p>
+    </div>
     <p class="lead text-center">
         Vos billets ont bien été envoyé à l'adresse email suivante :<br/>
         <strong>{{ email }}</strong>  <i class="fa fa-paper-plane-o" aria-hidden="true"></i>
     </p>
 
     <p class="text-center lead">À bientôt !</p>
+
+
 {% endblock %}

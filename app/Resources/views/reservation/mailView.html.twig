@@ -1,0 +1,35 @@
+<div class="container" style="color:#333;">
+    <h1><img src='https://upload.wikimedia.org/wikipedia/fr/9/9f/Musee_du_Louvre_1992_logo.png' alt='Logo musée du louvre'>Musée du Louvre</h1>
+    <p>
+        Madame, Monsieur,<br/>
+        Nous avons bien pris note de votre réservation pour le musée du Louvre et nous
+        vous remercions de votre confiance.
+    </p>
+    <p>
+    </p>
+
+    {% for i in 1..visitors %}
+        <div class="ticket" style="border: thin solid #CCC;padding:20px; border-radius:5px; margin-top:30px;">
+            <h2>Billet {{ i }}</h2>
+            <h3>Musée du Louvre - Rue de Rivoli, 75001 Paris, France</h3>
+            <p>Le {{ reservationDate|upper }} à partir de
+                <strong>
+                    {% if ticketType == false %}
+                          14H00
+                        {% else %}
+                          09H00
+                    {% endif %}
+                </strong>
+            </p>
+            <p>Nom: {{ visitorData[i-1].lastname }}</p>
+            <p>Prénom: {{ visitorData[i-1].firstname }}</p>
+            <p>PRIX TTC: EUR {{ ticketPrice[i-1] }},00</p>
+
+            <div id="qrcode" style="text-align:right;">
+                <p><img src="http://www.appcoda.com/wp-content/uploads/2013/12/qrcode.jpg" width="160" /></p>
+                <p>{{ reservationCode }}</p>
+            </div>
+        </div>
+    {% endfor %}
+</div>
+

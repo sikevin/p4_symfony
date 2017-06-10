@@ -81,6 +81,12 @@ class ReservationController extends Controller
 	 */
 	public function formVisitorAction(Request $request)
 	{
+		//	Si la session reservation n'existe pas
+		if($request->getSession()->get('reservation') == null)
+		{
+			return $this->redirectToRoute('form_reserv');
+		}
+
 		$session = $request->getSession();
 		$reservation		= $session->get('reservation');
 		$email				= $reservation->getEmail();
@@ -138,6 +144,12 @@ class ReservationController extends Controller
 	 */
 	public function summaryAction(Request $request)
 	{
+		//	Si les sessions n'existe pas
+		if($request->getSession()->get('reservation') == null || $request->getSession()->get('visitors') == null )
+		{
+			return $this->redirectToRoute('form_reserv');
+		}
+
 		$session = $request->getSession();
 		$visitorsData		= $session->get('visitors');
 		$reservation		= $session->get('reservation');
@@ -148,7 +160,7 @@ class ReservationController extends Controller
 		for ($i=0; $i < $visitors; $i++)
 		{
 			$lastnames[]	= $visitorsData[$i]->getLastname();
-			$firstnames[] 	= $visitorsData[$i]->getFirstname();
+			$firstnames[]	= $visitorsData[$i]->getFirstname();
 			$countries[]	= $visitorsData[$i]->getCountry();
 			$birthdates[]	= $visitorsData[$i]->getBirthdate();
 			$tariffs[]		= $visitorsData[$i]->getTariff();
@@ -168,6 +180,8 @@ class ReservationController extends Controller
 				$ticketPrice[$key] = 5;
 			}
 		}
+		// Garde en session le prix des billets
+		$session->set('ticketPrice', $ticketPrice);
 
 		//	Prix total de la commande
 		$total = 0;
@@ -227,6 +241,8 @@ class ReservationController extends Controller
 
 			//	Appelle des données en session
 			$session = $request->getSession();
+			//Enregistre le code de réservation dans une session
+			$session->set('reservationCode', $reservationCode);
 			//	Formulaire information du visiteur
 			$visitorsData		= $session->get('visitors');
 			//	Formulaire information sur la réservation
@@ -286,7 +302,45 @@ class ReservationController extends Controller
 	public function bookingValAction(Request $request)
 	{
 		$session = $request->getSession();
-		$email = $session->get('reservation')->getEmail();
+		$visitorsData		= $session->get('visitors');
+		$reservation 		= $session->get('reservation');
+		$reservationCode 	= $session->get('reservationCode');
+		$ticketPrice		= $session->get('ticketPrice');
+
+		$email				= $reservation->getEmail();
+		$reservationDate 	= $reservation->getReservationDate()->format('d-m-Y');
+		$ticketType			= $reservation->getTicketType();
+		$visitors			= $reservation->getVisitors();
+
+		$mailBodyHTML = $this->render('reservation/mailView.html.twig', [
+			'reservationDate' 	=>	$reservationDate,
+			'visitorData'		=>	$visitorsData,
+			'visitors'			=>	$visitors,
+			'ticketType'		=>	$ticketType,
+			'reservationCode'	=>	$reservationCode,
+			'ticketPrice'		=>	$ticketPrice,
+			])->getContent();
+
+		//	Envoie d'email
+		$message = \Swift_Message::newInstance();
+		$message->setSubject("Votre réservation pour le musée du Louvre");
+		$message->setFrom('sikevin.sk@gmail.com');
+		$message->setTo($email);
+		// pour envoyer le message en HTML
+		$message->setBody('Monsieur Kevin SI,
+						Nous avons bien pris note de votre réservation pour le 
+						musée du Louvre et nous vous remercions de votre confiance.');
+		// pour envoyer le message en HTML
+		$message->setBody(
+			$mailBodyHTML,
+			'text/html');
+		//envoi du message
+		$this->get('mailer')->send($message);
+
+		$session->set('visitors', '');
+		$session->set('reservation', '');
+		$session->set('reservationCode', '');
+		$session->set('ticketPrice', '');
 
 		return $this->render('reservation/validated.html.twig', [
 			'email' => $email,
