@@ -14,7 +14,6 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Session\Session;
 
 use AppBundle\Entity\Reservation;
 use AppBundle\Entity\Visitor;
@@ -301,6 +300,11 @@ class ReservationController extends Controller
 	 */
 	public function bookingValAction(Request $request)
 	{
+		if($request->getSession()->get('reservation') == null || $request->getSession()->get('visitors') == null )
+		{
+			return $this->redirectToRoute('form_reserv');
+		}
+
 		$session = $request->getSession();
 		$visitorsData		= $session->get('visitors');
 		$reservation 		= $session->get('reservation');
@@ -324,12 +328,8 @@ class ReservationController extends Controller
 		//	Envoie d'email
 		$message = \Swift_Message::newInstance();
 		$message->setSubject("Votre réservation pour le musée du Louvre");
-		$message->setFrom('sikevin.sk@gmail.com');
+		$message->setFrom('confirmation@museedulouvre.com');
 		$message->setTo($email);
-		// pour envoyer le message en HTML
-		$message->setBody('Monsieur Kevin SI,
-						Nous avons bien pris note de votre réservation pour le 
-						musée du Louvre et nous vous remercions de votre confiance.');
 		// pour envoyer le message en HTML
 		$message->setBody(
 			$mailBodyHTML,
