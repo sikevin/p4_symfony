@@ -34,7 +34,7 @@ class DefaultControllerTest extends WebTestCase
 			$ticket->setReservation($reservation);
 			$ticket->setLastname('SI');
 			$ticket->setFirstname('Kevin');
-			$ticket->setBirthdate('1995/06/20');
+			$ticket->setBirthdate(new \DateTime('1995/06/20'));
 			$ticket->setCountry('France');
 			$ticket->setTariff(FALSE);
 			$i++;
@@ -57,8 +57,9 @@ class DefaultControllerTest extends WebTestCase
 		$this->assertContainsOnly('string', [$reservationCode]);
 	}
 
-	public function testGetAge($birthdate)
+	public function testGetAge()
 	{
+		$birthdate = new \DateTime('1995-06-20');
 		$datetime = new \DateTime('NOW');
 		$year 		=	date_format($datetime, 'Y');
 		$birthdateY = date_format($birthdate, 'Y');
@@ -67,5 +68,6 @@ class DefaultControllerTest extends WebTestCase
 		$this->assertContainsOnly('int', [$age]);
 		return $age;
 	}
+
 
 }

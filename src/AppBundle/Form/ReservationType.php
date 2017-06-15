@@ -14,7 +14,7 @@ use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Validator\Constraints\GreaterThanOrEqual;
 use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\NotEqualTo;
-use Symfony\Component\Validator\Constraints\NotIdenticalTo;
+use Symfony\Component\Validator\Constraints\Type;
 use Symfony\Component\Validator\Constraints\Range;
 
 
@@ -43,13 +43,56 @@ class ReservationType extends AbstractType
 				'widget' 		=> 'single_text',
 				'html5' 		=> false,
 				'attr'			=> ['class' => 'datepicker'],
-				'constraints'	=>
+				'constraints'	=> [
 					new GreaterThanOrEqual(
 						array(
 							"value" => "today",
 							"message" => "La date de visite doit être au moins celle d'aujourd'hui."
 						)
 					),
+					new NotEqualTo(
+						array(
+							"value" 	=> '2017-07-14',
+							"message" 	=> 'Impossible de commander pour un jour férié, un mardi ou un dimanche'
+						)
+					),
+					new NotEqualTo(
+						array(
+							"value" 	=> '2017-01-01',
+							"message" 	=> 'Impossible de commander pour un jour férié, un mardi ou un dimanche'
+						)
+					),
+					new NotEqualTo(
+						array(
+							"value" 	=> '2017-05-01',
+							"message" 	=> 'Impossible de commander pour un jour férié, un mardi ou un dimanche'
+						)
+					),
+					new NotEqualTo(
+						array(
+							"value" 	=> '2017-05-08',
+							"message" 	=> 'Impossible de commander pour un jour férié, un mardi ou un dimanche'
+						)
+					),
+					new NotEqualTo(
+						array(
+							"value" 	=> '2017-08-15',
+							"message" 	=> 'Impossible de commander pour un jour férié, un mardi ou un dimanche'
+						)
+					),
+					new NotEqualTo(
+						array(
+							"value" 	=> '2017-11-01',
+							"message" 	=> 'Impossible de commander pour un jour férié, un mardi ou un dimanche'
+						)
+					),
+					new NotEqualTo(
+						array(
+							"value" 	=> '2017-12-25',
+							"message" 	=> 'Impossible de commander pour un jour férié, un mardi ou un dimanche'
+						)
+					),
+				]
 				)
 			)
 			->add('ticketType',		ChoiceType::class, array(
@@ -62,7 +105,14 @@ class ReservationType extends AbstractType
 						// adds a class like attending_yes, attending_no, etc
 						return ['class' => strtolower($key)];
 				},
-
+				"constraints" => [
+					new Type (
+						array(
+							"type" => 'bool',
+							"message" => "La valeur doit être un boolean"
+						)
+					)
+				]
 				)
 			)
 			->add('visitors', ChoiceType::class, array(

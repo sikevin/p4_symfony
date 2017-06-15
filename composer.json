@@ -1,10 +1,11 @@
 {
+    "description": "Projet 4 Musée du louvre",
     "name": "kevin/projet4",
     "license": "proprietary",
     "type": "project",
     "autoload": {
         "psr-4": {
-            "": "src/"
+            "AppBundle\\": "src/AppBundle"
         },
         "classmap": [
             "app/AppKernel.php",
@@ -26,7 +27,6 @@
         "doctrine/orm": "^2.5",
         "eternicode/bootstrap-datepicker": "1.7.0-RC3",
         "incenteev/composer-parameter-handler": "^2.0",
-        "endroid/qrcode": "^2.2",
         "sensio/distribution-bundle": "^5.0",
         "sensio/framework-extra-bundle": "^3.0.2",
         "stripe/stripe-php": "4.*",

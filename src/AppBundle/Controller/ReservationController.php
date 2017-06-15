@@ -8,7 +8,6 @@
 
 namespace AppBundle\Controller;
 
-use Doctrine\DBAL\Types\DateType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -223,7 +222,7 @@ class ReservationController extends Controller
 
 		// Token is created using Stripe.js or Checkout!
 		//// Get the payment token submitted by the form:
-		$token = $_POST['stripeToken'];
+		$token = $request->request->get('stripeToken');
 		try {
 			// Charge the user's card:
 			$charge = \Stripe\Charge::create(array(

@@ -31,8 +31,16 @@
                     $('.datepicker').datepicker({
                         format: 'dd-mm-yyyy',
                         language: 'fr',
-                        daysOfWeekDisabled: [2],
-                        datesDisabled: ['01-05-yyyy', '01-11-yyyy', '25-12-yyyy'],
+                        daysOfWeekDisabled: [2, 0],
+                        datesDisabled: [
+                            '01-01-yyyy',
+                            '01-05-yyyy',
+                            '08-05-yyyy',
+                            '14-07-yyyy',
+                            '15-08-yyyy',
+                            '01-11-yyyy',
+                            '25-12-yyyy'
+                        ],
                         changeMonth: true,
                         changeYear: true,
                         beforeShowDay: function (date, inst) {
