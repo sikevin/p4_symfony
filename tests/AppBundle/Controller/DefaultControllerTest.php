@@ -69,5 +69,14 @@ class DefaultControllerTest extends WebTestCase
 		return $age;
 	}
 
+	public function testForm()
+	{
+		$form['lastname'] = 'SI';
+		$form['firstname'] = 'Kevin';
+		$form['country'] = 'FR';
+		$form['birthdate'] = '1995-06-20';
 
+		$this->assertContainsOnly('string', [$form['lastname']]);
+		$this->assertContainsOnly('string', [$form['firstname']]);
+	}
 }

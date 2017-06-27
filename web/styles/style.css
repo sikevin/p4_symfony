@@ -1,3 +1,25 @@
+body
+{
+    background-image: url(../smoke.jpg);
+    background-repeat:no-repeat;
+    background-size: cover;
+}
+
+.title-style
+{
+    background-color: #333;
+    color:#FFF;
+    border-radius: 5px;
+    padding:10px 20px;
+    opacity: 0.95;
+}
+
+.control-label
+{
+    font-weight:lighter;
+}
+
+
 h4:not(:first-child)
 {
     margin-top: 40px;

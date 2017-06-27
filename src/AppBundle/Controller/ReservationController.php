@@ -80,7 +80,7 @@ class ReservationController extends Controller
 	public function formVisitorAction(Request $request)
 	{
 		//	Si la session reservation n'existe pas
-		if($request->getSession()->get('reservation') == null)
+		if ($request->getSession()->get('reservation') == null)
 		{
 			return $this->redirectToRoute('form_reserv');
 		}
@@ -344,5 +344,20 @@ class ReservationController extends Controller
 		return $this->render('reservation/validated.html.twig', [
 			'email' => $email,
 		]);
+	}
+
+	/**
+	 * @Route(
+	 *     "/cancel",
+	 *     name="cancel"
+	 * )
+	 */
+	public function cancelAction(Request $request)
+	{
+		$session = $request->getSession();
+		$session->set('visitors', '');
+		$session->set('reservation', '');
+
+		return $this->redirectToRoute('form_reserv');
 	}
 }

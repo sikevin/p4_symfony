@@ -13,10 +13,10 @@ use Symfony\Component\Form\Extension\Core\Type\EmailType;
 
 use Symfony\Component\Validator\Constraints\GreaterThanOrEqual;
 use Symfony\Component\Validator\Constraints\Length;
-use Symfony\Component\Validator\Constraints\NotEqualTo;
 use Symfony\Component\Validator\Constraints\Type;
 use Symfony\Component\Validator\Constraints\Range;
 
+use AppBundle\Validator\Constraints;
 
 class ReservationType extends AbstractType
 {
@@ -50,48 +50,7 @@ class ReservationType extends AbstractType
 							"message" => "La date de visite doit être au moins celle d'aujourd'hui."
 						)
 					),
-					new NotEqualTo(
-						array(
-							"value" 	=> '2017-07-14',
-							"message" 	=> 'Impossible de commander pour un jour férié, un mardi ou un dimanche'
-						)
-					),
-					new NotEqualTo(
-						array(
-							"value" 	=> '2017-01-01',
-							"message" 	=> 'Impossible de commander pour un jour férié, un mardi ou un dimanche'
-						)
-					),
-					new NotEqualTo(
-						array(
-							"value" 	=> '2017-05-01',
-							"message" 	=> 'Impossible de commander pour un jour férié, un mardi ou un dimanche'
-						)
-					),
-					new NotEqualTo(
-						array(
-							"value" 	=> '2017-05-08',
-							"message" 	=> 'Impossible de commander pour un jour férié, un mardi ou un dimanche'
-						)
-					),
-					new NotEqualTo(
-						array(
-							"value" 	=> '2017-08-15',
-							"message" 	=> 'Impossible de commander pour un jour férié, un mardi ou un dimanche'
-						)
-					),
-					new NotEqualTo(
-						array(
-							"value" 	=> '2017-11-01',
-							"message" 	=> 'Impossible de commander pour un jour férié, un mardi ou un dimanche'
-						)
-					),
-					new NotEqualTo(
-						array(
-							"value" 	=> '2017-12-25',
-							"message" 	=> 'Impossible de commander pour un jour férié, un mardi ou un dimanche'
-						)
-					),
+					new Constraints\CheckDate(),
 				]
 				)
 			)

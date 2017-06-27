@@ -5,7 +5,7 @@
 {% endblock %}
 
 {% block body %}
-    <h1><i class="fa fa-ticket" aria-hidden="true"></i>    Billetterie officielle</h1>
+    <h1 class="title-style"><i class="fa fa-ticket" aria-hidden="true"></i>    Billetterie officielle</h1>
 
     {% for message in app.session.flashBag.get('error') %}
         <div class="flash-notice">

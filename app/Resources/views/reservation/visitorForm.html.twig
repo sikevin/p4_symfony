@@ -6,10 +6,10 @@
 
 {% block body %}
 
+
     {# Formulaire #}
     <div class="well">
         <div class="form-group">
-            <p><a href="{{ path('form_reserv') }}">Précédent</a></p>
             <p><strong>Adresse email:</strong> {{ email }} </p>
             <p><strong>Date de réservation:</strong> {{ reservationDate|date("d/m/Y") }} </p>
             <p><strong>Type de billet:</strong> {% if ticketType == true %}Journée{% else %}Demi-Journée{% endif %} </p>
@@ -17,7 +17,15 @@
         </div>
     </div>
 
-    <h1>Informations sur le(s) visiteur(s)</h1>
+    <h1 class="title-style"><i class="fa fa-users" aria-hidden="true"></i> Informations sur le(s) visiteur(s)</h1>
+
+        <p>
+            <button class="btn btn-danger">
+                <a href="{{ path('cancel') }}" style="color:#333;text-decoration: none"><i class="fa fa-times" aria-hidden="true"></i>  Annuler la réservation</a>
+            </button>
+            <button class="btn btn-default"><a href="{{ path('form_reserv') }}" style="color:#333;text-decoration: none"><i class="fa fa-chevron-circle-left" aria-hidden="true"></i>  Précédent</a></button>
+        </p>
+
     <div class="well">
         <div class="fullForm">
             {% for i in 1..visitors %}

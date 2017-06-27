@@ -2,9 +2,19 @@
 
 {% block title %}Votre commande{% endblock %}
 {% block body %}
-    <p><a href="{{ path('form_visitor') }}">Précédent</a></p>
-    <h2>Récapitulatif de réservation</h2>
 
+    <h2 class="title-style"><i class="fa fa-table" aria-hidden="true"></i>Récapitulatif de réservation</h2>
+
+    <p>
+        <button class="btn btn-danger">
+            <a href="{{ path('cancel') }}" style="color:#333;text-decoration: none"><i class="fa fa-times" aria-hidden="true"></i>  Annuler la réservation</a>
+        </button>
+        <button class="btn btn-default">
+            <a href="{{ path('form_visitor') }}" style="color:#333;text-decoration: none"><i class="fa fa-chevron-circle-left" aria-hidden="true"></i>  Précédent</a>
+        </button>
+    </p>
+
+    <div class="well">
     <p class="text-uppercase lead ">
         Billet
         {% if ticketType == true %}
@@ -75,6 +85,8 @@
         </script>
     </form>
 
+    </div>
+    
     <script src="https://js.stripe.com/v3/"></script>
     <script>
         var stripe = Stripe('pk_test_LQgIJa9tPe000ePbsB6TdzAF');
