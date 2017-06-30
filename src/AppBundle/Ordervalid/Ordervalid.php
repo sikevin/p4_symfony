@@ -9,11 +9,19 @@
 namespace AppBundle\Ordervalid;
 
 
-use Symfony\Component\Validator\Constraints\DateTime;
-
 class Ordervalid
 {
-	public function ticketPrice($birthdates, $ticketType)
+	//Prix du billet visiteur
+	// entre 4 et 12 ans
+	private $childPrice = 8;
+	// entre 12 et 60 ans
+	private $adultePrice = 16;
+	// à partir de 60 ans
+	private $oldPrice = 12;
+	// Si le visiteur a coché tariff réduit
+	private $reducedPrice = 10;
+
+	public function ticketPrice($birthdates, $ticketType, $tariffs)
 	{
 		$age = $this->getAge($birthdates);
 
@@ -23,34 +31,48 @@ class Ordervalid
 
 				if ($ticketType == false)
 				{
-					$price[] = 4;
+					$price[] = $this->childPrice/2;
 				}
 				else{
-					$price[] = 8; //€
+					$price[] = $this->childPrice; //€
 				}
 			}
 			else if($indivAge >= 60) {
 
 				if ($ticketType == false)
 				{
-					$price[] = 6;
+					$price[] = $this->oldPrice/2;
 				}
-				else{$price[] = 12; //€
+				else{$price[] = $this->oldPrice; //€
 				}
 			}
 			else if($indivAge >= 12) {
 
 				if ($ticketType == false)
 				{
-					$price[] = 8;
-				}else{$price[] = 16; //€
+					$price[] = $this->adultePrice/2;
+				} else{
+					$price[] = $this->adultePrice; //€
 				}
 			}
 			else{
-				$price[] = 0; //€‡
+				$price[] = 0; //€
 			}
 		}
 
+		//	Vérification du tarif réduit
+		foreach ($tariffs as $key => $value)
+		{
+			//	Vérification tarif réduit
+			if($tariffs[$key] == true && $ticketType == true)
+			{
+				$price[$key] = $this->reducedPrice;
+			}
+			else if ($tariffs[$key] == true && $ticketType == false)
+			{
+				$price[$key] = $this->reducedPrice/2;
+			}
+		}
 
 		return $price;
 	}
@@ -67,6 +89,7 @@ class Ordervalid
 		return $age;
 	}
 
+
 	public function reservationCode()
 	{
 		$characters    = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
@@ -79,4 +102,14 @@ class Ordervalid
 		return $reservationCode;
 	}
 
+	public function total($ticketPrice)
+	{
+		//	Prix total de la commande
+		$total = 0;
+		foreach ($ticketPrice as $value)
+		{
+			$total += $value;
+		}
+		return $total;
+	}
 }

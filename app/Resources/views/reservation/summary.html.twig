@@ -78,19 +78,27 @@
                 data-description="Réservation de billet"
                 data-image="{{ asset('louvre.jpg') }}"
                 data-locale="auto"
-                data-zip-code="true"
+                data-zip-code="false"
                 data-currency="eur"
                 data-label="Payer avec votre carte"
                 data-allow-remember-me="false">
         </script>
     </form>
-
+    <span class="totalZero text-danger">Le prix doit être supérieur à 0€, le musée est gratuit pour les enfants de moins de 4 ans</span>
     </div>
     
     <script src="https://js.stripe.com/v3/"></script>
     <script>
         var stripe = Stripe('pk_test_LQgIJa9tPe000ePbsB6TdzAF');
         var elements = stripe.elements();
+
+        $('.totalZero').css('display', 'none');
+
+        if($("h4.text-right").text() == 'Total: 0 €')
+        {
+            $('form.text-right').css('display', 'none');
+            $('.totalZero').css('display', 'block');
+        }
     </script>
 
 {% endblock %}

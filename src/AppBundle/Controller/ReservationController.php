@@ -67,6 +67,7 @@ class ReservationController extends Controller
 			{
 				return $this->redirectToRoute('form_visitor');
 			}
+
 		}
 
 		return $this->render('reservation/reservationForm.html.twig',[
@@ -165,29 +166,13 @@ class ReservationController extends Controller
 		}
 
 		$ordervalid = new Ordervalid();
-		$ticketPrice = $ordervalid->ticketPrice( $birthdates, $ticketType);
+		//	Prix par billet
+		$ticketPrice = $ordervalid->ticketPrice( $birthdates, $ticketType, $tariffs);
+		//	Total de tous les billets
+		$total = $ordervalid->total($ticketPrice);
 
-		foreach ($tariffs as $key => $value)
-		{
-			//	Vérification tarif réduit
-			if($tariffs[$key] == true && $ticketType == true){
-				$ticketPrice[$key] = 10;
-			}
-			else if ($tariffs[$key] == true && $ticketType == false)
-			{
-				$ticketPrice[$key] = 5;
-			}
-		}
 		// Garde en session le prix des billets
 		$session->set('ticketPrice', $ticketPrice);
-
-		//	Prix total de la commande
-		$total = 0;
-		foreach ($ticketPrice as $value)
-		{
-			$total += $value;
-		}
-
 		// Mis en session pour le récupérer dans le controller checkoutAction
 		$session->set('total', $total);
 

@@ -57,8 +57,8 @@ class ReservationType extends AbstractType
 			->add('ticketType',		ChoiceType::class, array(
 				'label'			=> 'Type de billet',
 				"choices" => array(
-					'Journée' 		=> true,
-					'Demi-journée'	=> false
+					'Journée (à partir de 9h00)' 		=> true,
+					'Demi-journée (à partir de 14h00)'	=> false
 				),
 				'choice_attr' => function($val, $key, $index) {
 						// adds a class like attending_yes, attending_no, etc
