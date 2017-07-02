@@ -17,6 +17,7 @@ use Symfony\Component\HttpFoundation\Request;
 use AppBundle\Entity\Reservation;
 use AppBundle\Entity\Visitor;
 use AppBundle\Ordervalid\Ordervalid;
+use AppBundle\Sessions\Sessions;
 
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
@@ -42,22 +43,19 @@ class ReservationController extends Controller
 		if ($request->isMethod('POST') && $reservationForm->handleRequest($request)->isValid())
 		{
 			$em = $this->getDoctrine()->getManager();
-
 			$em->persist($reservationEntity);
-
-			$session = $request->getSession();
-			$session->set('reservation', $reservationEntity);
+			//	Garde en session le formulaire de réservation
+			$session = new Sessions();
+			$session = $session->setInSessionFormReserv($request, $reservationEntity);
 
 			$repository = $em->getRepository('AppBundle:Reservation');
 			$bookingList = $repository->findByReservationDate($session->get('reservation')->getReservationDate());
 
-			$nbVisitors = 0;
-			foreach($bookingList as $visitors)
-			{
-				$nbVisitors =  $nbVisitors + $visitors->getVisitors();
-			}
+			//	Vérification du nombre de billet max vendu ce jour là
+			$orderValid = new Ordervalid();
+			$nbVisitors = $orderValid->countVisitors($bookingList);
 
-			if($nbVisitors >= 1000)
+			if($nbVisitors >= $this->getParameter('max_visitors'))
 			{
 				// add flash messages
 				$this->get('session')->getFlashBag()->add('error', 'Le nombre maximal de billet vendu pour ce jour a été atteint. Veuillez sélectionner une autre date.');
@@ -67,7 +65,6 @@ class ReservationController extends Controller
 			{
 				return $this->redirectToRoute('form_visitor');
 			}
-
 		}
 
 		return $this->render('reservation/reservationForm.html.twig',[
@@ -86,14 +83,11 @@ class ReservationController extends Controller
 			return $this->redirectToRoute('form_reserv');
 		}
 
-		$session = $request->getSession();
-		$reservation		= $session->get('reservation');
-		$email				= $reservation->getEmail();
-		$reservationDate 	= $reservation->getReservationDate();
-		$ticketType			= $reservation->getTicketType();
-		$visitors			= $reservation->getVisitors();
+		// Récupérer la session du formulaire de réservation
+		$session = new Sessions();
+		$reservation = $session->getInSessionFormReserv($request);
 
-		for ($i = 1; $i <= $visitors; $i++)
+		for ($i = 1; $i <= $reservation['visitors']; $i++)
 		{
 			$visitor[] = new Visitor();
 		}
@@ -106,22 +100,11 @@ class ReservationController extends Controller
 				'label'		=> 'Suivant',
 				'attr' 		=> array('class' => 'save')));
 
-		if($email == null)
-		{
-			return $this->redirectToRoute('form_reserv');
-		}
-
 		if ($request->isMethod('POST') && $visitorForm->handleRequest($request)->isValid())
 		{
 			$em = $this->getDoctrine()->getManager();
 
-			$session = $request->getSession();
-
-			foreach ($visitor as $key => $value)
-			{
-				$em->persist($visitor[$key]);
-			}
-			$session->set('visitors', $visitor);
+			 $session->setInSessionFormVisitor($request, $visitor, $em);
 
 			$this->addFlash('notice', 'visiteurs ajouté');
 
@@ -131,10 +114,10 @@ class ReservationController extends Controller
 		return $this->render('reservation/visitorForm.html.twig',[
 			'visitorForm'		=> $visitorForm->createView(),
 
-			'email'				=> $email,
-			'reservationDate'	=> $reservationDate,
-			'ticketType'		=> $ticketType,
-			'visitors'			=> $visitors,
+			'email'				=> $reservation['email'],
+			'reservationDate'	=> $reservation['reservationDate'],
+			'ticketType'		=> $reservation['ticketType'],
+			'visitors'			=> $reservation['visitors'],
 		]);
 	}
 
@@ -149,40 +132,31 @@ class ReservationController extends Controller
 			return $this->redirectToRoute('form_reserv');
 		}
 
-		$session = $request->getSession();
-		$visitorsData		= $session->get('visitors');
-		$reservation		= $session->get('reservation');
+		$session = new Sessions();
+		//appel des données du formulaire info des visiteurs et du formulaire de reservation
+		$reservationData = $session->getReservationData($request);
 
-		$ticketType			= $reservation->getTicketType();
-		$visitors			= $reservation->getVisitors();
-
-		for ($i=0; $i < $visitors; $i++)
-		{
-			$lastnames[]	= $visitorsData[$i]->getLastname();
-			$firstnames[]	= $visitorsData[$i]->getFirstname();
-			$countries[]	= $visitorsData[$i]->getCountry();
-			$birthdates[]	= $visitorsData[$i]->getBirthdate();
-			$tariffs[]		= $visitorsData[$i]->getTariff();
-		}
+		$tariffs	=	$reservationData['tariffs'];
+		$ticketType =	$reservationData['tariffs'];
+		$birthdates = 	$reservationData['birthdates'];
 
 		$ordervalid = new Ordervalid();
 		//	Prix par billet
-		$ticketPrice = $ordervalid->ticketPrice( $birthdates, $ticketType, $tariffs);
+		$prices = $this->getParameter('price');
+		$ticketPrice = $ordervalid->ticketPrice( $birthdates, $ticketType, $tariffs, $prices);
 		//	Total de tous les billets
 		$total = $ordervalid->total($ticketPrice);
 
-		// Garde en session le prix des billets
-		$session->set('ticketPrice', $ticketPrice);
-		// Mis en session pour le récupérer dans le controller checkoutAction
-		$session->set('total', $total);
+		//Garde en session le prix par billet et le total
+		$session->setInSessionPrice($request, $ticketPrice, $total);
 
 		return $this->render('reservation/summary.html.twig', [
-			'lastnames'		=>	$lastnames,
-			'firstnames'	=>	$firstnames,
-			'countries'		=>	$countries,
+			'lastnames'		=>	$reservationData['lastnames'],
+			'firstnames'	=>	$reservationData['firstnames'],
+			'countries'		=>	$reservationData['countries'],
 			'birthdates'	=>	$birthdates,
 			'tariffs'		=>	$tariffs,
-			'visitors'		=>	$visitors,
+			'visitors'		=>	$reservationData['visitors'],
 			'ticketPrice'	=>	$ticketPrice,
 			'ticketType'	=>	$ticketType,
 			'total'			=>	$total,
@@ -198,9 +172,6 @@ class ReservationController extends Controller
 	 */
 	public function checkoutAction(Request $request)
 	{
-		$session = $request->getSession();
-		$total = $session->get('total');
-
 		// Set your secret key: remember to change this to your live secret key in production
 		// See your keys here: https://dashboard.stripe.com/account/apikeys
 		\Stripe\Stripe::setApiKey("sk_test_WcieSviH58jVYnWyqBr4CCCY");
@@ -209,6 +180,8 @@ class ReservationController extends Controller
 		//// Get the payment token submitted by the form:
 		$token = $request->request->get('stripeToken');
 		try {
+			$session = $request->getSession();
+			$total = $session->get('total');
 			// Charge the user's card:
 			$charge = \Stripe\Charge::create(array(
 				"amount" => $total * 100,
@@ -222,47 +195,18 @@ class ReservationController extends Controller
 			$ordervalid = new Ordervalid();
 			$reservationCode = $ordervalid->reservationCode();
 
-			//	Appelle des données en session
-			$session = $request->getSession();
 			//Enregistre le code de réservation dans une session
 			$session->set('reservationCode', $reservationCode);
-			//	Formulaire information du visiteur
-			$visitorsData		= $session->get('visitors');
-			//	Formulaire information sur la réservation
-			$reservation		= $session->get('reservation');
 
-			$email				= $reservation->getEmail();
-			$reservationDate 	= $reservation->getReservationDate();
-			$ticketType			= $reservation->getTicketType();
-			$visitors			= $reservation->getVisitors();
+			$sessions = new Sessions();
+			$reservationData = $sessions->getReservationData($request);
 
-			// Met dans l'entité Réservation les données du formulaire de réservation
-			$reservationEntity = new Reservation();
-			$reservationEntity->setEmail($email);
-			$reservationEntity->setReservationDate($reservationDate);
-			$reservationEntity->setTicketType($ticketType);
-			$reservationEntity->setVisitors($visitors);
-			$reservationEntity->setReservationCode($reservationCode);
-			$em->persist($reservationEntity);
+			// Met dans l'entité Réservation les données du formulaire de réservation & persist
+			$reservationEntity =
+				$sessions->persistFormReserv($reservationData['reservation']->getEmail(), $reservationData['reservation']->getReservationDate(), $reservationData['reservation']->getTicketType(), $reservationData['reservation']->getVisitors(), $reservationCode, $em);
 
-			for ($i=0; $i < $visitors; $i++)
-			{
-				$lastnames[]	= $visitorsData[$i]->getLastname();
-				$firstnames[] 	= $visitorsData[$i]->getFirstname();
-				$countries[]	= $visitorsData[$i]->getCountry();
-				$birthdates[]	= $visitorsData[$i]->getBirthdate();
-				$tariffs[]		= $visitorsData[$i]->getTariff();
-
-				// Met dans l'entitié visitor les données du formulaire visiteur
-				$visitorEntity = new Visitor();
-				$visitorEntity->setReservation($reservationEntity);
-				$visitorEntity->setLastname($lastnames[$i]);
-				$visitorEntity->setFirstname($firstnames[$i]);
-				$visitorEntity->setCountry($countries[$i]);
-				$visitorEntity->setBirthdate($birthdates[$i]);
-				$visitorEntity->setTariff($tariffs[$i]);
-				$em->persist($visitorEntity);
-			}
+			// Met dans l'entitié Visitor les données du formulaire visiteur & persist
+			$sessions->persistFormVisitor( $reservationData['reservation']->getVisitors(), $reservationData['visitorsData'], $reservationEntity, $em);
 
 			$em->flush();
 
@@ -290,21 +234,16 @@ class ReservationController extends Controller
 		}
 
 		$session = $request->getSession();
-		$visitorsData		= $session->get('visitors');
-		$reservation 		= $session->get('reservation');
+		$sessions = new Sessions();
+		$reservationData	= $sessions->getReservationData($request);
 		$reservationCode 	= $session->get('reservationCode');
 		$ticketPrice		= $session->get('ticketPrice');
 
-		$email				= $reservation->getEmail();
-		$reservationDate 	= $reservation->getReservationDate()->format('d-m-Y');
-		$ticketType			= $reservation->getTicketType();
-		$visitors			= $reservation->getVisitors();
-
 		$mailBodyHTML = $this->render('reservation/mailView.html.twig', [
-			'reservationDate' 	=>	$reservationDate,
-			'visitorData'		=>	$visitorsData,
-			'visitors'			=>	$visitors,
-			'ticketType'		=>	$ticketType,
+			'reservationDate' 	=>	$reservationData['reservation']->getReservationDate()->format('d-m-Y'),
+			'visitorData'		=>	$reservationData['visitorsData'],
+			'visitors'			=>	$reservationData['reservation']->getVisitors(),
+			'ticketType'		=>	$reservationData['reservation']->getTicketType(),
 			'reservationCode'	=>	$reservationCode,
 			'ticketPrice'		=>	$ticketPrice,
 			])->getContent();
@@ -313,7 +252,7 @@ class ReservationController extends Controller
 		$message = \Swift_Message::newInstance();
 		$message->setSubject("Votre réservation pour le musée du Louvre");
 		$message->setFrom('confirmation@museedulouvre.com');
-		$message->setTo($email);
+		$message->setTo($reservationData['reservation']->getEmail());
 		// pour envoyer le message en HTML
 		$message->setBody(
 			$mailBodyHTML,
@@ -321,27 +260,20 @@ class ReservationController extends Controller
 		//envoi du message
 		$this->get('mailer')->send($message);
 
-		$session->set('visitors', '');
-		$session->set('reservation', '');
-		$session->set('reservationCode', '');
-		$session->set('ticketPrice', '');
+		$sessions->destroySessions($request);
 
 		return $this->render('reservation/validated.html.twig', [
-			'email' => $email,
+			'email' => $reservationData['reservation']->getEmail(),
 		]);
 	}
 
 	/**
-	 * @Route(
-	 *     "/cancel",
-	 *     name="cancel"
-	 * )
+	 * @Route("/cancel", name="cancel")
 	 */
 	public function cancelAction(Request $request)
 	{
-		$session = $request->getSession();
-		$session->set('visitors', '');
-		$session->set('reservation', '');
+		$session = new Sessions();
+		$session->destroySessions($request);
 
 		return $this->redirectToRoute('form_reserv');
 	}

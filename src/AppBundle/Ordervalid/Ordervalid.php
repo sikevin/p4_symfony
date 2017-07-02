@@ -11,17 +11,17 @@ namespace AppBundle\Ordervalid;
 
 class Ordervalid
 {
-	//Prix du billet visiteur
-	// entre 4 et 12 ans
-	private $childPrice = 8;
-	// entre 12 et 60 ans
-	private $adultePrice = 16;
-	// à partir de 60 ans
-	private $oldPrice = 12;
-	// Si le visiteur a coché tariff réduit
-	private $reducedPrice = 10;
+	public function countVisitors($bookingList)
+	{
+		$nbVisitors = 0;
+		foreach($bookingList as $visitors)
+		{
+			$nbVisitors =  $nbVisitors + $visitors->getVisitors();
+		}
 
-	public function ticketPrice($birthdates, $ticketType, $tariffs)
+		return $nbVisitors;
+	}
+	public function ticketPrice($birthdates, $ticketType, $tariffs, $prices)
 	{
 		$age = $this->getAge($birthdates);
 
@@ -31,28 +31,28 @@ class Ordervalid
 
 				if ($ticketType == false)
 				{
-					$price[] = $this->childPrice/2;
+					$price[] = $prices['child']/2;
 				}
 				else{
-					$price[] = $this->childPrice; //€
+					$price[] = $prices['child']; //€
 				}
 			}
 			else if($indivAge >= 60) {
 
 				if ($ticketType == false)
 				{
-					$price[] = $this->oldPrice/2;
+					$price[] = $prices['old']/2;
 				}
-				else{$price[] = $this->oldPrice; //€
+				else{$price[] = $prices['old']; //€
 				}
 			}
 			else if($indivAge >= 12) {
 
 				if ($ticketType == false)
 				{
-					$price[] = $this->adultePrice/2;
+					$price[] = $prices['adult']/2;
 				} else{
-					$price[] = $this->adultePrice; //€
+					$price[] = $prices['adult']; //€
 				}
 			}
 			else{
@@ -66,11 +66,11 @@ class Ordervalid
 			//	Vérification tarif réduit
 			if($tariffs[$key] == true && $ticketType == true)
 			{
-				$price[$key] = $this->reducedPrice;
+				$price[$key] = $prices['reduced'];
 			}
 			else if ($tariffs[$key] == true && $ticketType == false)
 			{
-				$price[$key] = $this->reducedPrice/2;
+				$price[$key] = $prices['reduced']/2;
 			}
 		}
 
